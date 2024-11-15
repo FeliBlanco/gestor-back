@@ -9,11 +9,13 @@ app.use(express.json());
 const PORT = process.env.PORT || 3000;
 
 app.get('/actualizarsv', (req, res) => {
-    const { scriptPath } = req.body;
+    const { sistema } = req.query;
 
-    if(!scriptPath) return res.status(400).json({ error: 'Debes proporcionar la ruta del script' });
+    if(!sistema) return res.status(400).json({ error: 'Debes proporcionar la ruta del script' });
 
-    exec(`bash ${scriptPath}`, (error, stdout, stderr) => {
+    const ruta = "/home/"
+
+    exec(`bash /home/actualizadores/script.sh`, (error, stdout, stderr) => {
         if(error) {
             console.error(`Error ejecutando el script: ${error.message}`);
             return res.status(500).json({ error: `Error: ${error.message}` });
