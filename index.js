@@ -38,10 +38,10 @@ const sistemas = [
     }
 ]
 
-app.get('/actualizar-front', (req, res) => {
+app.get('/actualizar', (req, res) => {
     const { sistema } = req.query;
 
-    if(!sistema) return res.status(400).json({ error: 'Debes proporcionar la ruta del script' });
+    if(!sistema) return res.status(400).json({ error: 'Ingresa el ID del sistema' });
 
     const sistemaIndex = sistemas.findIndex(i => i.id == sistema);
     if(sistemaIndex != -1) {
