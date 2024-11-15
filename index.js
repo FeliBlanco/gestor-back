@@ -2,10 +2,13 @@ const express = require('express');
 require('dotenv').config()
 const { exec } = require('child_process');
 const { Client } = require('pg');
+const cors = require('cors');
+
 
 
 const app = express();
 app.use(express.json());
+app.use(cors());
 
 
 const clientPS = new Client({
@@ -119,7 +122,7 @@ app.get('/proyecto', (req, res) => {
     clientPS
     .query(`SELECT * FROM proyectos`)
     .then(response => {
-        res.send(response)
+        res.send(response.rows)
     })
     .catch(err => {
         console.log(err)
