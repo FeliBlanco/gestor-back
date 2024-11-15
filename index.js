@@ -110,6 +110,7 @@ app.post('/proyecto', (req, res) => {
         res.send()
     })
     .catch(err => {
+        console.log(err)
         res.status(503).send()
     })
 }) 
@@ -121,6 +122,7 @@ app.get('/proyecto', (req, res) => {
         res.send(res)
     })
     .catch(err => {
+        console.log(err)
         res.status(503).send()
     })
 })
