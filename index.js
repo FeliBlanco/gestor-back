@@ -106,7 +106,7 @@ app.post('/proyecto', (req, res) => {
 
     clientPS
     .query(`INSERT INTO proyectos (nombre, repositorio, rama, ruta_final, directorio_copiar, type) VALUES ($1, $2, $3, $4, $5, $6)`, [nombre, repositorio, rama, ruta_final, directorio_copiar, type])
-    .then(res => {
+    .then(response => {
         res.send()
     })
     .catch(err => {
@@ -118,8 +118,8 @@ app.post('/proyecto', (req, res) => {
 app.get('/proyecto', (req, res) => {
     clientPS
     .query(`SELECT * FROM proyectos`)
-    .then(res => {
-        res.send(res)
+    .then(response => {
+        res.send(response)
     })
     .catch(err => {
         console.log(err)
