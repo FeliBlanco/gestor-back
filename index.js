@@ -15,7 +15,12 @@ app.get('/actualizarsv', (req, res) => {
 
     const ruta = "/home/"
 
-    exec(`bash /home/actualizadores/script.sh`, (error, stdout, stderr) => {
+    const repositorio = "https://github.com/valentincabrera/cobranzas.front"
+    const rama ="main"
+    const ruta_final = "/home/proyectos/cobranzas/front"
+    const directorio = "build"
+
+    exec(`bash /home/actualizadores/script.sh ${repositorio} ${rama} ${ruta_final} ${directorio}`, (error, stdout, stderr) => {
         if(error) {
             console.error(`Error ejecutando el script: ${error.message}`);
             return res.status(500).json({ error: `Error: ${error.message}` });
