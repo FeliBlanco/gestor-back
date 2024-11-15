@@ -46,7 +46,7 @@ app.get('/actualizar', (req, res) => {
     const sistemaIndex = sistemas.findIndex(i => i.id == sistema);
     if(sistemaIndex != -1) {
         const { repositorio, rama, ruta_final, directorio_copiar } = sistemas[sistemaIndex];
-        if(sistemas[sistemaIndex].type != "front")  {
+        if(sistemas[sistemaIndex].type == "front")  {
             exec(`bash /home/actualizadores/script.sh ${repositorio} ${rama} ${ruta_final} ${directorio_copiar}`, (error, stdout, stderr) => {
                 if(error) {
                     console.error(`Error ejecutando el script: ${error.message}`);
@@ -58,7 +58,7 @@ app.get('/actualizar', (req, res) => {
                 }
                 res.json({ output: stdout || stderr });
             });
-        } else if(sistemas[sistemaIndex].type != "back") {
+        } else if(sistemas[sistemaIndex].type == "back") {
             exec(`cd ${ruta_final} && git pull && docker-compose up --build -d`, (error, stdout, stderr) => {
                 if(error) {
                     console.error(`Error ejecutando el script: ${error.message}`);
