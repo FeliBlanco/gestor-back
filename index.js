@@ -23,7 +23,6 @@ clientPS.connect().then(() => console.log('Conexión exitosa a PostgreSQL')).cat
 
 const PORT = process.env.PORT || 3000;
 
-let actualizando = []
 
 app.get('/actualizar', (req, res) => {
     const { sistema } = req.query;
