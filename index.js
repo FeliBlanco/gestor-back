@@ -1,10 +1,22 @@
 const express = require('express');
 require('dotenv').config()
 const { exec } = require('child_process');
+const { Client } = require('pg');
+
 
 const app = express();
 app.use(express.json());
 
+
+const clientPS = new Client({
+    user: 'postgres',
+    host: '149.50.144.176',
+    database: 'gestor',
+    password: 'sULaSplavaSTouSCAuDirESat',
+    port: 5432,
+});
+
+clientPS.connect().then(() => console.log('Conexión exitosa a PostgreSQL')).catch(err => console.error('Error de conexión', err.stack));
 
 const PORT = process.env.PORT || 3000;
 
@@ -80,30 +92,27 @@ app.get('/actualizar', (req, res) => {
     }
 });
 
-app.get('/actualizar-back', (req, res) => {
-    const { sistema } = req.query;
+app.post('/proyecto', (req, res) => {
+    const {
+        nombre,
+        repositorio,
+        rama,
+        ruta_final,
+        directorio_copiar,
+        type
+    } = req.body;
 
-    if(!sistema) return res.status(400).json({ error: 'Debes proporcionar la ruta del script' });
+    if(!nombre || !repositorio || !rama || !ruta_final || !directorio_copiar || !type) return res.status(503).send();
 
-    const ruta = "/home/"
-
-    const repositorio = "https://github.com/valentincabrera/cobranzas.front"
-    const rama ="main"
-    const ruta_final = "/home/proyectos/cobranzas/front"
-    const directorio = "build"
-
-    exec(`bash /home/actualizadores/script.sh ${repositorio} ${rama} ${ruta_final} ${directorio}`, (error, stdout, stderr) => {
-        if(error) {
-            console.error(`Error ejecutando el script: ${error.message}`);
-            return res.status(500).json({ error: `Error: ${error.message}` });
-        }
-
-        if(stderr) {
-            console.warn(`Advertencias: ${stderr}`);
-        }
-        res.json({ output: stdout || stderr });
-    });
-});
+    clientPS
+    .query(`INSERT INTO proyectos (nombre, repositorio, rama, ruta_final, directorio_copiar, type) VALUES ($1, $2, $3, $4, $5, $6)`, [nombre, repositorio, rama, ruta_final, directorio_copiar, type])
+    .then(res => {
+        res.send()
+    })
+    .catch(err => {
+        res.status(503).send()
+    })
+}) 
 
 
 app.listen(PORT, () => console.log(`PORT: ${PORT}`))
