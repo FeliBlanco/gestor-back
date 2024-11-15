@@ -114,5 +114,15 @@ app.post('/proyecto', (req, res) => {
     })
 }) 
 
+app.get('/proyecto', (req, res) => {
+    clientPS
+    .query(`SELECT * FROM proyectos`)
+    .then(res => {
+        res.send(res)
+    })
+    .catch(err => {
+        res.status(503).send()
+    })
+})
 
 app.listen(PORT, () => console.log(`PORT: ${PORT}`))
