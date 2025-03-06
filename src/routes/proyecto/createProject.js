@@ -36,6 +36,9 @@ const createProject = async (req, res) => {
 
     const grupoData = await clientPS.query(`SELECT id, usuario FROM grupos WHERE id = $1`, [grupo])
     if(grupoData.rowCount == 0) return res.status(404).send("no se encontro grupo")
+        
+    const frameworkData = await clientPS.query(`SELECT * FROM frameworks WHERE id = $1`, [framework])
+    if(frameworkData.rowCount == 0) return res.status(404).send("no se encontro framework")
 
     clientPS
     .query(`
@@ -83,13 +86,19 @@ const createProject = async (req, res) => {
                 await clientPS.query(`INSERT INTO env_vars (proyecto, key, value) VALUES ($1, $2, $3)`, [response.rows[0].id, env_var.key, env_var.value])
             }
         }
-        exec(`mkdir -p ${global.URL_PROYECTOS}${grupoData.rows[0].usuario}/${proyect_directory}`, (error, stdout, stderr) => {
+        const directorio = `${global.URL_PROYECTOS}${grupoData.rows[0].usuario}/${proyect_directory}`
+        await exec(`mkdir -p ${directorio}`, (error, stdout, stderr) => {
             if(error) {
                 console.log("ERROR AL CREAR DIRECTORIO CREAR PROYECTO")
                 console.log(error)
             } else {
+                if(frameworkData.rows[0].tipo == "back") {
+                    exec(`cd ${directorio} && git clone ${git_repo} .`, (errorC, stdoutC, stderrC) => {
 
+                    })
+                }
             }
+
         })
         res.send({usuario: usuario})
     })

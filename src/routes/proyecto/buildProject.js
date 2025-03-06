@@ -55,7 +55,7 @@ const buildProject = async (req, res) => {
     -v ${global.URL_PROYECTOS}${grupo.rows[0].usuario}:/output \
     -w /app \
     node:18-alpine \
-    sh -c "npm install --legacy-peer-deps && npm run build && cp -r dist /output/front"`, async (error, stdout, stderr) => { 
+    sh -c "npm install --legacy-peer-deps && npm run build && cp -r dist /output/${data.proyect_directory}"`, async (error, stdout, stderr) => { 
             if(error) {
                 //console.error(`Error ejecutando el script: ${error.message}`);
                 clientPS.query(`UPDATE proyectos SET actualizando = 0 WHERE id = $1`, [data.id]);
@@ -123,13 +123,12 @@ const buildProject = async (req, res) => {
 
                 clientPS.query(`UPDATE builds SET status = $1, time = $2 WHERE id = $3`, [status, tiempo_build, build_log.rows[0].id]);
             }
-
         });
 
 
     } else if(tipo_sistema == "back") {
         clientPS.query(`UPDATE proyectos SET actualizando = 1 WHERE id = $1`, [data.id]);
-        exec(`cd ${ruta_final} && git pull && docker-compose up --build -d`, (error, stdout, stderr) => {
+        const child = exec(`cd ${global.URL_PROYECTOS}${grupo.rows[0].usuario}/${data.proyect_directory} && git checkout ${rama} && git pull && docker-compose up --build -d`, (error, stdout, stderr) => {
             if(error) {
                 console.error(`Error ejecutando el script: ${error.message}`);
                 clientPS.query(`UPDATE proyectos SET actualizando = 0 WHERE id = $1`, [data.id]);
@@ -141,6 +140,36 @@ const buildProject = async (req, res) => {
             }
             clientPS.query(`UPDATE proyectos SET actualizando = 0 WHERE id = $1`, [data.id]);
             res.json({ output: stdout || stderr });
+        });
+
+        child.stdout.on('data', (data) => {
+            const hora = moment().format('HH:mm:ss')
+            io.emit('build-log', {text: `[${hora}] ${data}`, type:"ok"})
+        });
+
+        child.stderr.on('data', (data) => {
+            const hora = moment().format('HH:mm:ss')
+            io.emit('build-log', {text: `[${hora}] ${data}`, type:"warning"});
+        });
+
+        child.on('close', (code) => {
+            const hora = moment().format('HH:mm:ss')
+
+            if(code == 0) {
+                io.emit('build-log', {text: `[${hora}] success`, type:"success"});
+            } else {
+                io.emit('build-log', {text: `[${hora}] error`, type:"error"});
+            }
+
+            if(build_log && build_log.rowCount > 0) {
+                let status = code == 0 ? 'success' : 'error'
+                let tiempo_final = Date.now()
+
+                const tiempo_build = tiempo_final - tiempo_comienzo;
+
+                clientPS.query(`UPDATE builds SET status = $1, time = $2 WHERE id = $3`, [status, tiempo_build, build_log.rows[0].id]);
+            }
+
         });
     }
 }
