@@ -158,15 +158,15 @@ app.get('/actualizar/:id', async (req, res) => {
         });*/
 
         child.stdout.on('data', (data) => {
-            io.emit('build-log', data.toString())
+            io.emit('build-log', {text: data, type:"ok"})
             console.log("--")
             console.log(data)
         });
         proc.stderr.on('data', (data) => {
-            io.emit('build-log', data.toString());
+            io.emit('build-log', {text: data, type:"warning"});
           });
         proc.on('close', (code) => {
-            io.emit('build-log', code === 0 ? 'success' : 'error');
+            io.emit('build-log', {text: code === 0 ? 'success' : 'error', type:"ok"});
         });
 
 
