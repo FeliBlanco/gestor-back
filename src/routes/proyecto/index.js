@@ -12,8 +12,8 @@ app.post('/', createProject)
 app.put('/:id', updateProject)
 app.get('/', getProjects)
 
-app.get('/:grupo/:proyecto', getProjectByGroupAndProjectId)
 app.get('/build/:id', buildProject);
+app.get('/:grupo/:proyecto', getProjectByGroupAndProjectId)
 
 app.get('/:grupo', getGroupProjects)
 
