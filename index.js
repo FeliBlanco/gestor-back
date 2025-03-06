@@ -134,7 +134,7 @@ app.get('/actualizar/:id', async (req, res) => {
     -v ${URL_PROYECTOS}${grupo.rows[0].usuario}:/output \
     -w /app \
     node:18-alpine \
-    sh -c "npm install --legacy-peer-deps && npm run build && cp -r dist /output/front"`, (error, stdout, stderr) => { 
+    sh -c "npm install --legacy-peer-deps && npm run build && cp -r dist /output/front"`, async (error, stdout, stderr) => { 
             if(error) {
                 //console.error(`Error ejecutando el script: ${error.message}`);
                 clientPS.query(`UPDATE proyectos SET actualizando = 0 WHERE id = $1`, [data.id]);
@@ -146,13 +146,14 @@ app.get('/actualizar/:id', async (req, res) => {
             if(stderr) {
                 //console.warn(`Advertencias: ${stderr}`);
             }
-            exec('git rev-parse --short HEAD', (error2, stdout2) => {
+            exec('git rev-parse --short HEAD', async (error2, stdout2) => {
                 if(!error2) {
                     console.log("EL COMMIT")
                     console.log(stdout2)
+                    await clientPS.query(`UPDATE proyectos SET commit_build = $1 WHERE id = $2`, [stdout2, data.id]);
                 }
             })
-            clientPS.query(`UPDATE proyectos SET actualizando = 0, fecha_build = $1 WHERE id = $2`, [fecha, data.id]);
+            await clientPS.query(`UPDATE proyectos SET actualizando = 0, fecha_build = $1 WHERE id = $2`, [fecha, data.id]);
             io.emit('actualizando-state', {state: false})
 
             res.json({ output: stdout || stderr });
@@ -173,16 +174,21 @@ app.get('/actualizar/:id', async (req, res) => {
         });*/
 
         child.stdout.on('data', (data) => {
-            io.emit('build-log', {text: data, type:"ok"})
+            const hora = moment().format('HH:mm:ss')
+            io.emit('build-log', {text: `[${hora}] ${data}`, type:"ok"})
         });
+
         child.stderr.on('data', (data) => {
-            io.emit('build-log', {text: data, type:"warning"});
-          });
+            const hora = moment().format('HH:mm:ss')
+            io.emit('build-log', {text: `[${hora}] ${data}`, type:"warning"});
+        });
+
         child.on('close', (code) => {
+            const hora = moment().format('HH:mm:ss')
             if(code == 0) {
-                io.emit('build-log', {text: 'success', type:"success"});
+                io.emit('build-log', {text: `[${hora}] success`, type:"success"});
             } else {
-                io.emit('build-log', {text: 'error', type:"error"});
+                io.emit('build-log', {text: `[${hora}] error`, type:"error"});
             }
         });
 
