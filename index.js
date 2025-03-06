@@ -107,7 +107,7 @@ app.get('/actualizar/:id', async (req, res) => {
 
         await clientPS.query(`UPDATE proyectos SET actualizando = 1 WHERE id = $1`, [data.id]);
 
-        const child = exec(`docker run --rm -v /var/www/${grupo.rows[0].usuario}:/output my-node-image bash -c "git clone ${repositorio} /tmp/build_project; cd /tmp/build_project; npm install; npm run build; cp -r dist /output"`, (error, stdout, stderr) => { 
+        const child = exec(`docker run --rm -v /var/www/${grupo.rows[0].usuario}:/output my-node-image bash -c "git clone ${repositorio} /tmp/build_project2; cd /tmp/build_project2; npm install; npm run build; cp -r dist /output"`, (error, stdout, stderr) => { 
             if(error) {
                 console.error(`Error ejecutando el script: ${error.message}`);
                 clientPS.query(`UPDATE proyectos SET actualizando = 0 WHERE id = $1`, [data.id]);
