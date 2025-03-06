@@ -94,6 +94,8 @@ app.post('/grupo', async (req, res) => {
 app.get('/actualizar/:id', async (req, res) => {
     const sistema = req.params.id;
 
+    console.log("ACTUALIZAR ENDPOINT")
+
     if(!sistema) return res.status(400).json({ error: 'Ingresa el ID del sistema' });
 
     const proyecto = await clientPS.query(`SELECT * FROM proyectos WHERE id = $1`, [sistema])
@@ -131,13 +133,13 @@ app.get('/actualizar/:id', async (req, res) => {
     node:18-alpine \
     sh -c "npm install --legacy-peer-deps && npm run build && cp -r dist /output/front"`, (error, stdout, stderr) => { 
             if(error) {
-                console.error(`Error ejecutando el script: ${error.message}`);
+                //console.error(`Error ejecutando el script: ${error.message}`);
                 clientPS.query(`UPDATE proyectos SET actualizando = 0 WHERE id = $1`, [data.id]);
                 return res.status(500).json({ error: `Error: ${error.message}` });
             }
             
             if(stderr) {
-                console.warn(`Advertencias: ${stderr}`);
+                //console.warn(`Advertencias: ${stderr}`);
             }
             clientPS.query(`UPDATE proyectos SET actualizando = 0 WHERE id = $1`, [data.id]);
             res.json({ output: stdout || stderr });
@@ -159,13 +161,11 @@ app.get('/actualizar/:id', async (req, res) => {
 
         child.stdout.on('data', (data) => {
             io.emit('build-log', {text: data, type:"ok"})
-            console.log("--")
-            console.log(data)
         });
-        proc.stderr.on('data', (data) => {
+        child.stderr.on('data', (data) => {
             io.emit('build-log', {text: data, type:"warning"});
           });
-        proc.on('close', (code) => {
+        child.on('close', (code) => {
             io.emit('build-log', {text: code === 0 ? 'success' : 'error', type:"ok"});
         });
 
