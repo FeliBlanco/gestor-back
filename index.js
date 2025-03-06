@@ -5,11 +5,21 @@ const { Client } = require('pg');
 const cors = require('cors');
 const moment = require('moment')
 
+const http = require('http')
+const { Server } = require('socket.io');
+
 
 const app = express();
+
+const server = http.createServer(app)
+const io = new Server(server);
 app.use(express.json());
 app.use(cors());
 
+io.on("connection", (socket) => {
+    // ...
+    console.log("USER")
+  });
 
 const clientPS = new Client({
     user: 'postgres',
@@ -358,4 +368,4 @@ app.get('/proyecto/:grupo', (req, res) => {
     })
 })
 
-app.listen(PORT, () => console.log(`PORT: ${PORT}`))
+server.listen(PORT, () => console.log(`PORT: ${PORT}`))
