@@ -118,6 +118,8 @@ app.get('/actualizar/:id', async (req, res) => {
     if(grupo.rowCount == 0) return res.status(503).send("No se encontró el grupo")
 
     const tipo_sistema = framework.rows[0].tipo;
+
+    const fecha = moment().format('D/MM/YYYY HH:mm:ss')
             
     if(tipo_sistema == "front")  {
 
@@ -144,7 +146,13 @@ app.get('/actualizar/:id', async (req, res) => {
             if(stderr) {
                 //console.warn(`Advertencias: ${stderr}`);
             }
-            clientPS.query(`UPDATE proyectos SET actualizando = 0 WHERE id = $1`, [data.id]);
+            exec('git rev-parse --short HEAD', (error2, stdout2) => {
+                if(!error2) {
+                    console.log("EL COMMIT")
+                    console.log(stdout2)
+                }
+            })
+            clientPS.query(`UPDATE proyectos SET actualizando = 0, fecha_build = $1 WHERE id = $2`, [fecha, data.id]);
             io.emit('actualizando-state', {state: false})
 
             res.json({ output: stdout || stderr });
@@ -382,7 +390,7 @@ app.get('/proyectos/:grupo', async (req, res) => {
         if(grupo.rowCount == 0) return res.status(404).send("no")
         const proyectos = await clientPS.query(`SELECT * FROM proyectos WHERE grupo = $1`, [grupo.rows[0].id])
         res.send(proyectos.rows)
-        
+
     }
     catch(err) {
         console.log(err)
