@@ -122,6 +122,7 @@ app.get('/actualizar/:id', async (req, res) => {
     if(tipo_sistema == "front")  {
 
         await clientPS.query(`UPDATE proyectos SET actualizando = 1 WHERE id = $1`, [data.id]);
+        io.emit('actualizando-state', {state: true})
 
         const child = exec(`rm -r /tmp/build_project2 && git clone ${repositorio} /tmp/build_project2 \
   && cd /tmp/build_project2 \
@@ -135,6 +136,8 @@ app.get('/actualizar/:id', async (req, res) => {
             if(error) {
                 //console.error(`Error ejecutando el script: ${error.message}`);
                 clientPS.query(`UPDATE proyectos SET actualizando = 0 WHERE id = $1`, [data.id]);
+                io.emit('actualizando-state', {state: false})
+
                 return res.status(500).json({ error: `Error: ${error.message}` });
             }
             
@@ -142,6 +145,8 @@ app.get('/actualizar/:id', async (req, res) => {
                 //console.warn(`Advertencias: ${stderr}`);
             }
             clientPS.query(`UPDATE proyectos SET actualizando = 0 WHERE id = $1`, [data.id]);
+            io.emit('actualizando-state', {state: false})
+
             res.json({ output: stdout || stderr });
         })
 
