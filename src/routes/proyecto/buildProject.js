@@ -1,10 +1,13 @@
 const moment = require('moment')
 const { exec } = require('child_process');
 const clientPS = require('../../db');
+const { getIO } = require('../../socket');
 
 
 const buildProject = async (req, res) => {
     const sistema = req.params.id;
+
+    const io = getIO();
 
     console.log("ACTUALIZAR ENDPOINT")
 
