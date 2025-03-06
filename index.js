@@ -158,9 +158,15 @@ app.get('/actualizar/:id', async (req, res) => {
         });*/
 
         child.stdout.on('data', (data) => {
-            io.emit('build-log', data)
+            io.emit('build-log', data.toString())
             console.log("--")
             console.log(data)
+        });
+        proc.stderr.on('data', (data) => {
+            io.emit('build-log', data.toString());
+          });
+        proc.on('close', (code) => {
+            io.emit('build-log', code === 0 ? 'success' : 'error');
         });
 
 
