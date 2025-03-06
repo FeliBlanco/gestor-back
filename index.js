@@ -171,7 +171,11 @@ app.get('/actualizar/:id', async (req, res) => {
             io.emit('build-log', {text: data, type:"warning"});
           });
         child.on('close', (code) => {
-            io.emit('build-log', {text: code === 0 ? 'success' : 'error', type:"ok"});
+            if(code == 0) {
+                io.emit('build-log', {text: 'success', type:"success"});
+            } else {
+                io.emit('build-log', {text: 'error', type:"error"});
+            }
         });
 
 
