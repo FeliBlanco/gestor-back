@@ -77,65 +77,86 @@ app.post('/grupo', async (req, res) => {
 })
 
 
-app.get('/actualizar', (req, res) => {
-    const { sistema } = req.query;
+app.get('/actualizar/:id', async (req, res) => {
+    const sistema = req.params.id;
 
     if(!sistema) return res.status(400).json({ error: 'Ingresa el ID del sistema' });
 
-    clientPS.query(`SELECT * FROM proyectos WHERE id = $1`, [sistema]).then(response => {
-        if(response.rows.length > 0) {
-            const data = response.rows[0];
-            const { repositorio, rama, ruta_final, directorio_copiar } = data;
+    const proyecto = await clientPS.query(`SELECT * FROM proyectos WHERE id = $1`, [sistema])
+    if(proyecto.rowCount == 0) return res.status(503).send("No se encontró ningun proyecto")
 
-            if(data.actualizando == 1) return res.status(401).send("Ya se está actualizando ese sistema")
-            if(data.type == "front")  {
-                clientPS.query(`UPDATE proyectos SET actualizando = 1 WHERE id = $1`, [data.id]);
+    const data = proyecto.rows[0];
 
-                const child = exec(`bash /home/actualizadores/script.sh ${repositorio} ${rama} ${ruta_final} ${directorio_copiar}`, (error, stdout, stderr) => {
-                    if(error) {
-                        console.error(`Error ejecutando el script: ${error.message}`);
-                        clientPS.query(`UPDATE proyectos SET actualizando = 0 WHERE id = $1`, [data.id]);
-                        return res.status(500).json({ error: `Error: ${error.message}` });
-                    }
+    const { repositorio, rama, ruta_final, directorio_copiar } = data;
+
+    if(data.actualizando == 1) return res.status(401).send("Ya se está actualizando ese sistema")
+
+    
+    const search_ac = await clientPS.query(`SELECT * FROM proyectos WHERE actualizando != 0`, [])
+    if(search_ac.rowCount != 0) return res.status(503).send("Ya hay un sistema actualizandose")
+
+    const framework = await clientPS.query(`SELECT * FROM frameworks WHERE id = $1`, [data.framework])
+    if(framework.rowCount == 0) return res.status(503).send("No se encontró el framework")
+
+    const grupo = await clientPS.query(`SELECT * FROM grupos WHERE id = $1`, [data.grupo])
+    if(grupo.rowCount == 0) return res.status(503).send("No se encontró el grupo")
+
+    const tipo_sistema = framework.rows[0].tipo;
             
-                    if(stderr) {
-                        console.warn(`Advertencias: ${stderr}`);
-                    }
-                    clientPS.query(`UPDATE proyectos SET actualizando = 0 WHERE id = $1`, [data.id]);
-                    res.json({ output: stdout || stderr });
-                });
+    if(tipo_sistema == "front")  {
 
-                child.stdout.on('data', (data) => {
-                    console.log("--")
-                    console.log(data)
-                });
+        await clientPS.query(`UPDATE proyectos SET actualizando = 1 WHERE id = $1`, [data.id]);
 
-
-            } else if(data.type == "back") {
-                clientPS.query(`UPDATE proyectos SET actualizando = 1 WHERE id = $1`, [data.id]);
-                exec(`cd ${ruta_final} && git pull && docker-compose up --build -d`, (error, stdout, stderr) => {
-                    if(error) {
-                        console.error(`Error ejecutando el script: ${error.message}`);
-                        clientPS.query(`UPDATE proyectos SET actualizando = 0 WHERE id = $1`, [data.id]);
-                        return res.status(500).json({ error: `Error: ${error.message}` });
-                    }
-            
-                    if(stderr) {
-                        console.warn(`Advertencias: ${stderr}`);
-                    }
-                    clientPS.query(`UPDATE proyectos SET actualizando = 0 WHERE id = $1`, [data.id]);
-                    res.json({ output: stdout || stderr });
-                });
+        const child = exec(`docker run --rm -v /var/www/${grupo.rows[0].usuario}:/output my-node-image bash -c "git clone ${repositorio} /tmp/build_project; cd /tmp/build_project; npm install; npm run build; cp -r dist /output"`, (error, stdout, stderr) => { 
+            if(error) {
+                console.error(`Error ejecutando el script: ${error.message}`);
+                clientPS.query(`UPDATE proyectos SET actualizando = 0 WHERE id = $1`, [data.id]);
+                return res.status(500).json({ error: `Error: ${error.message}` });
             }
-        }
-        else {
-            res.status(503).send("No se encontró ningun proyecto")
-        }
-    })
-    .catch(err => {
-        res.status(503).send()
-    })
+            
+            if(stderr) {
+                console.warn(`Advertencias: ${stderr}`);
+            }
+            clientPS.query(`UPDATE proyectos SET actualizando = 0 WHERE id = $1`, [data.id]);
+            res.json({ output: stdout || stderr });
+        })
 
+        /*const child = exec(`bash /home/actualizadores/script.sh ${repositorio} ${rama} ${ruta_final} ${directorio_copiar}`, (error, stdout, stderr) => {
+            if(error) {
+                console.error(`Error ejecutando el script: ${error.message}`);
+                clientPS.query(`UPDATE proyectos SET actualizando = 0 WHERE id = $1`, [data.id]);
+                return res.status(500).json({ error: `Error: ${error.message}` });
+            }
+            
+            if(stderr) {
+                console.warn(`Advertencias: ${stderr}`);
+            }
+            clientPS.query(`UPDATE proyectos SET actualizando = 0 WHERE id = $1`, [data.id]);
+            res.json({ output: stdout || stderr });
+        });*/
+
+        child.stdout.on('data', (data) => {
+            console.log("--")
+            console.log(data)
+        });
+
+
+    } else if(tipo_sistema == "back") {
+        clientPS.query(`UPDATE proyectos SET actualizando = 1 WHERE id = $1`, [data.id]);
+        exec(`cd ${ruta_final} && git pull && docker-compose up --build -d`, (error, stdout, stderr) => {
+            if(error) {
+                        console.error(`Error ejecutando el script: ${error.message}`);
+                        clientPS.query(`UPDATE proyectos SET actualizando = 0 WHERE id = $1`, [data.id]);
+                        return res.status(500).json({ error: `Error: ${error.message}` });
+            }
+            
+            if(stderr) {
+                        console.warn(`Advertencias: ${stderr}`);
+            }
+            clientPS.query(`UPDATE proyectos SET actualizando = 0 WHERE id = $1`, [data.id]);
+            res.json({ output: stdout || stderr });
+        });
+    }
 });
 
 app.post('/proyecto', async (req, res) => {
