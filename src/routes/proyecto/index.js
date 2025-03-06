@@ -11,11 +11,12 @@ const app = Router();
 app.post('/', createProject) 
 app.put('/:id', updateProject)
 app.get('/', getProjects)
+
 app.get('/:grupo/:proyecto', getProjectByGroupAndProjectId)
+app.get('/build/:id', buildProject);
 
 app.get('/:grupo', getGroupProjects)
 
-app.get('/build/:id', buildProject);
 
 /*app.get('/:grupo', (req, res) => {
     const grupo = req.params.grupo;
