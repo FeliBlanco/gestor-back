@@ -36,6 +36,8 @@ const buildProject = async (req, res) => {
 
     const fecha = moment().format('D/MM/YYYY HH:mm:ss')
             
+    let tiempo_comienzo = Date.now()
+
     if(tipo_sistema == "front")  {
 
         await clientPS.query(`UPDATE proyectos SET actualizando = 1 WHERE id = $1`, [data.id]);
@@ -44,6 +46,7 @@ const buildProject = async (req, res) => {
 
         const build_log = await clientPS.query(`INSERT INTO builds (proyecto, fecha, commit, rama, status) VALUES ($1, $2, '', $3, 'running') RETURNING id`, [data.id, fecha, data.rama]);
 
+        
         const child = exec(`rm -r /tmp/build_project2 && git clone ${repositorio} /tmp/build_project2 \
         && cd /tmp/build_project2 \
         && git checkout ${rama} \
@@ -114,7 +117,11 @@ const buildProject = async (req, res) => {
 
             if(build_log && build_log.rowCount > 0) {
                 let status = code == 0 ? 'success' : 'error'
-                clientPS.query(`UPDATE builds SET status = $1 WHERE id = $2`, [status, build_log.rows[0].id]);
+                let tiempo_final = Date.now()
+
+                const tiempo_build = tiempo_final - tiempo_comienzo;
+
+                clientPS.query(`UPDATE builds SET status = $1, time = $2 WHERE id = $3`, [status, tiempo_build, build_log.rows[0].id]);
             }
 
         });

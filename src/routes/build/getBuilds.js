@@ -1,0 +1,17 @@
+const clientPS = require("../../db");
+
+const getBuilds = async (req, res) => {
+    try {
+        const project = req.params.project;
+        const result = await clientPS.query(`SELECT * FROM builds WHERE proyecto = $1`, [project])
+        console.log(result.rows)
+        res.send(result.rows)
+    }
+    catch(err) {
+        console.log(err)
+        res.status(503).send()
+    }
+
+}
+
+module.exports = getBuilds
