@@ -107,7 +107,7 @@ app.get('/actualizar/:id', async (req, res) => {
 
         await clientPS.query(`UPDATE proyectos SET actualizando = 1 WHERE id = $1`, [data.id]);
 
-        const child = exec(`git clone ${repositorio} /tmp/build_project2 \
+        const child = exec(`rm -r /tmp/build_project2 && git clone ${repositorio} /tmp/build_project2 \
   && cd /tmp/build_project2 \
   && git checkout ${rama} \
   && docker run --rm \
