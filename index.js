@@ -126,10 +126,13 @@ app.get('/actualizar/:id', async (req, res) => {
         await clientPS.query(`UPDATE proyectos SET actualizando = 1 WHERE id = $1`, [data.id]);
         io.emit('actualizando-state', {state: true})
 
+
+        const build_log = await clientPS.query(`INSERT INTO builds (proyecto, fecha, commit, rama, status) VALUES ($1, $2, '', $3, 'running') RETURNING id`, [data.id, fecha, data.rama]);
+
         const child = exec(`rm -r /tmp/build_project2 && git clone ${repositorio} /tmp/build_project2 \
-  && cd /tmp/build_project2 \
-  && git checkout ${rama} \
-  && docker run --rm \
+        && cd /tmp/build_project2 \
+        && git checkout ${rama} \
+        && docker run --rm \
     -v /tmp/build_project2:/app \
     -v ${URL_PROYECTOS}${grupo.rows[0].usuario}:/output \
     -w /app \
@@ -148,12 +151,14 @@ app.get('/actualizar/:id', async (req, res) => {
             }
             exec('git rev-parse --short HEAD', async (error2, stdout2) => {
                 if(!error2) {
-                    console.log("EL COMMIT")
-                    console.log(stdout2)
                     await clientPS.query(`UPDATE proyectos SET commit_build = $1 WHERE id = $2`, [stdout2, data.id]);
+                    if(build_log && build_log.rowCount > 0) {
+                        await clientPS.query(`UPDATE builds SET commit = $1 WHERE id = $2`, [stdout2, build_log.rows[0].id]);
+                    }
                 }
             })
             await clientPS.query(`UPDATE proyectos SET actualizando = 0, fecha_build = $1 WHERE id = $2`, [fecha, data.id]);
+            
             io.emit('actualizando-state', {state: false})
 
             res.json({ output: stdout || stderr });
@@ -185,11 +190,18 @@ app.get('/actualizar/:id', async (req, res) => {
 
         child.on('close', (code) => {
             const hora = moment().format('HH:mm:ss')
+
             if(code == 0) {
                 io.emit('build-log', {text: `[${hora}] success`, type:"success"});
             } else {
                 io.emit('build-log', {text: `[${hora}] error`, type:"error"});
             }
+
+            if(build_log && build_log.rowCount > 0) {
+                let status = code == 0 ? 'success' : 'error'
+                clientPS.query(`UPDATE builds SET status = $1 WHERE id = $2`, [status, build_log.rows[0].id]);
+            }
+
         });
 
 
@@ -197,13 +209,13 @@ app.get('/actualizar/:id', async (req, res) => {
         clientPS.query(`UPDATE proyectos SET actualizando = 1 WHERE id = $1`, [data.id]);
         exec(`cd ${ruta_final} && git pull && docker-compose up --build -d`, (error, stdout, stderr) => {
             if(error) {
-                        console.error(`Error ejecutando el script: ${error.message}`);
-                        clientPS.query(`UPDATE proyectos SET actualizando = 0 WHERE id = $1`, [data.id]);
-                        return res.status(500).json({ error: `Error: ${error.message}` });
+                console.error(`Error ejecutando el script: ${error.message}`);
+                clientPS.query(`UPDATE proyectos SET actualizando = 0 WHERE id = $1`, [data.id]);
+                return res.status(500).json({ error: `Error: ${error.message}` });
             }
             
             if(stderr) {
-                        console.warn(`Advertencias: ${stderr}`);
+                console.warn(`Advertencias: ${stderr}`);
             }
             clientPS.query(`UPDATE proyectos SET actualizando = 0 WHERE id = $1`, [data.id]);
             res.json({ output: stdout || stderr });
