@@ -2,6 +2,8 @@ const moment = require('moment')
 const { exec } = require('child_process');
 const clientPS = require('../../db');
 
+const getPort = require('get-port');
+
 
 const createProject = async (req, res) => {
     const {
@@ -84,6 +86,24 @@ const createProject = async (req, res) => {
         for(const env_var of enviroment_variables) {
             if(env_var.key.length > 0) {
                 await clientPS.query(`INSERT INTO env_vars (proyecto, key, value) VALUES ($1, $2, $3)`, [response.rows[0].id, env_var.key, env_var.value])
+            }
+        }
+        if(frameworkData.rows[0].tipo == "back") {
+            let puerto_usar = 0;
+            let intentos = 0;
+            while(puerto_usar == 0) {
+                const port = await getPort({ port: getPort.makeRange(3000, 6000) });
+                const search_port = await clientPS.query(`SELECT id FROM proyectos WHERE puerto = $1`, [port]);
+                if(search_port.rowCount == 0) {
+                    puerto_usar = port;
+                    await clientPS.query(`UPDATE proyectos SET puerto = $1 WHERE id = $2`, [port, response.rows[0].id]);
+                } else {
+                    intentos ++;
+                }
+                if(intentos >= 5) {
+                    console.log("No se encontró un puerto disponible!")
+                    break;
+                }
             }
         }
         const directorio = `${global.URL_PROYECTOS}${grupoData.rows[0].usuario}/${proyect_directory}`
