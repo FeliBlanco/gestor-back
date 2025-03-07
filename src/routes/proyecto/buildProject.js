@@ -60,13 +60,13 @@ const buildProject = async (req, res) => {
         }
     }
 
+    const build_log = await clientPS.query(`INSERT INTO builds (proyecto, fecha, commit, rama, status) VALUES ($1, $2, '', $3, 'running') RETURNING id`, [data.id, fecha, data.rama]);
     if(tipo_sistema == "front")  {
 
         await clientPS.query(`UPDATE proyectos SET actualizando = 1 WHERE id = $1`, [data.id]);
         io.emit('actualizando-state', {state: true})
 
 
-        const build_log = await clientPS.query(`INSERT INTO builds (proyecto, fecha, commit, rama, status) VALUES ($1, $2, '', $3, 'running') RETURNING id`, [data.id, fecha, data.rama]);
 
         
         const child = exec(`rm -r /tmp/build_project2 && git clone ${repositorio} /tmp/build_project2 \
