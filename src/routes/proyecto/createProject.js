@@ -16,8 +16,7 @@ const createProject = async (req, res) => {
 
     if(!nombre || !git_repo || !rama || !build_settings) return res.status(503).send();
 
-    const getPortModule = await import('get-port');
-    const getPort = getPortModule.default;
+    const { default: getPort, portNumbers } = await import('get-port');
 
 
     const {
@@ -95,7 +94,7 @@ const createProject = async (req, res) => {
             let intentos = 0;
             while(puerto_usar == 0) {
                 const port = await getPort({
-                    port: (port) => port >= 3000 && port <= 6000,
+                    port: portNumbers(3000, 6000),
                   });
                 const search_port = await clientPS.query(`SELECT id FROM proyectos WHERE puerto = $1`, [port]);
                 if(search_port.rowCount == 0) {
