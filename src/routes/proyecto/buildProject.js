@@ -53,7 +53,7 @@ const buildProject = async (req, res) => {
             }
         }); 
         try {
-            const envFilePath = path.join(global.URL_PROYECTOS.replaceAll('/', ''), grupo.rows[0].usuario, data.proyect_directory, '.env');
+            const envFilePath = path.join(global.URL_PROYECTOS, grupo.rows[0].usuario, data.proyect_directory, '.env');
             fs.writeFileSync(envFilePath, envContent, 'utf8');
         }
         catch(err) {
