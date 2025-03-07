@@ -94,7 +94,9 @@ const createProject = async (req, res) => {
             let puerto_usar = 0;
             let intentos = 0;
             while(puerto_usar == 0) {
-                const port = await getPort({port: getPortModule.makeRange(3000, 6000)});
+                const port = await getPort({
+                    port: (port) => port >= 3000 && port <= 6000,
+                  });
                 const search_port = await clientPS.query(`SELECT id FROM proyectos WHERE puerto = $1`, [port]);
                 if(search_port.rowCount == 0) {
                     puerto_usar = port;
