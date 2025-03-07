@@ -56,6 +56,7 @@ const buildProject = async (req, res) => {
             fs.writeFileSync(envFilePath, envContent, 'utf8');
         }
         catch(err) {
+            console.log(err)
             console.log("ERROR AL PEGAR EL .ENV")
         }
     }
