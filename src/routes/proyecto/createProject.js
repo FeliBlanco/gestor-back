@@ -2,8 +2,6 @@ const moment = require('moment')
 const { exec } = require('child_process');
 const clientPS = require('../../db');
 
-const getPort = require('get-port');
-
 
 const createProject = async (req, res) => {
     const {
@@ -18,6 +16,9 @@ const createProject = async (req, res) => {
 
     if(!nombre || !git_repo || !rama || !build_settings) return res.status(503).send();
 
+    const getPort = await import('get-port').then(mod => mod.default);
+
+    
     const {
         build_command,
         install_command,
