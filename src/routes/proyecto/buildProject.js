@@ -3,6 +3,7 @@ const { exec } = require('child_process');
 const clientPS = require('../../db');
 const { getIO } = require('../../socket');
 const fs = require('fs')
+const path = require('path')
 
 
 const buildProject = async (req, res) => {
