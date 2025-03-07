@@ -2,6 +2,7 @@ const moment = require('moment')
 const { exec } = require('child_process');
 const clientPS = require('../../db');
 const { getIO } = require('../../socket');
+const fs = require('fs')
 
 
 const buildProject = async (req, res) => {
@@ -37,6 +38,27 @@ const buildProject = async (req, res) => {
     const fecha = moment().format('D/MM/YYYY HH:mm:ss')
             
     let tiempo_comienzo = Date.now()
+
+    exec('docker image prune' ,() => {})
+
+
+    const env_vars = await clientPS.query(`SELECT * FROM env_vars WHERE proyecto = $1`, [data.id]);
+
+    let envContent = '';
+    if(env_vars.rowCount > 0) {
+        env_vars.rows.forEach(row => {
+            if (row.key && row.value) {
+                envContent += `${row.key}=${row.value}\n`;
+            }
+        }); 
+        try {
+            const envFilePath = path.join(global.URL_PROYECTOS.replaceAll('/', ''), grupo.rows[0].usuario, data.proyect_directory, '.env');
+            fs.writeFileSync(envFilePath, envContent, 'utf8');
+        }
+        catch(err) {
+            console.log("ERROR AL PEGAR EL .ENV")
+        }
+    }
 
     if(tipo_sistema == "front")  {
 
@@ -128,7 +150,13 @@ const buildProject = async (req, res) => {
 
     } else if(tipo_sistema == "back") {
         clientPS.query(`UPDATE proyectos SET actualizando = 1 WHERE id = $1`, [data.id]);
-        const child = exec(`cd ${global.URL_PROYECTOS}${grupo.rows[0].usuario}/${data.proyect_directory} && git checkout ${rama} && git pull && docker-compose up --build -d`, (error, stdout, stderr) => {
+        //const child = exec(`cd ${global.URL_PROYECTOS}${grupo.rows[0].usuario}/${data.proyect_directory} && git checkout ${rama} && git pull && docker-compose up --build -d`, (error, stdout, stderr) => {
+        const child = exec(`
+            cd ${global.URL_PROYECTOS}${grupo.rows[0].usuario}/${data.proyect_directory}
+            && git checkout ${rama}
+            && git pull
+            && docker rm -f ${data.proyect_directory} || true
+            && docker run -d --name ${data.proyect_directory} -p ${data.puerto}:3000 -v $(pwd):/app -w /app node:18-alpine sh -c "npm install --legacy-peer-deps && npm run build && npm start"`, (error, stdout, stderr) => {
             if(error) {
                 console.error(`Error ejecutando el script: ${error.message}`);
                 clientPS.query(`UPDATE proyectos SET actualizando = 0 WHERE id = $1`, [data.id]);
