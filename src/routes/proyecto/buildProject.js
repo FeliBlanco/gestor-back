@@ -152,11 +152,12 @@ const buildProject = async (req, res) => {
         clientPS.query(`UPDATE proyectos SET actualizando = 1 WHERE id = $1`, [data.id]);
         //const child = exec(`cd ${global.URL_PROYECTOS}${grupo.rows[0].usuario}/${data.proyect_directory} && git checkout ${rama} && git pull && docker-compose up --build -d`, (error, stdout, stderr) => {
         const child = exec(`
-            cd ${global.URL_PROYECTOS}${grupo.rows[0].usuario}/${data.proyect_directory}
-            && git checkout ${rama}
-            && git pull
-            && docker rm -f ${data.proyect_directory} || true
-            && docker run -d --name ${data.proyect_directory} -p ${data.puerto}:3000 -v $(pwd):/app -w /app node:18-alpine sh -c "npm install --legacy-peer-deps && npm run build && npm start"`, (error, stdout, stderr) => {
+            cd /home/proyectos/ddd/telemed-back-2 &&
+            git checkout sass &&
+            git pull &&
+            docker rm -f telemed-back-2 || true &&
+            docker run -d --name telemed-back-2 -p 3000:3000 -v $(pwd):/app -w /app node:18-alpine sh -c "npm install --legacy-peer-deps && npm run build && npm start"
+          `, (error, stdout, stderr) => {
             if(error) {
                 console.error(`Error ejecutando el script: ${error.message}`);
                 clientPS.query(`UPDATE proyectos SET actualizando = 0 WHERE id = $1`, [data.id]);
