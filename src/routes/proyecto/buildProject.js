@@ -71,7 +71,7 @@ const buildProject = async (req, res) => {
 
 
         
-        const child = exec(`rm -r /tmp/build_project2 && git clone ${repositorio} /tmp/build_project2 \
+        const child = exec(`rm -rf /tmp/build_project2 && git clone ${repositorio} /tmp/build_project2 \
         && cd /tmp/build_project2 \
         && git checkout ${rama} \
         && docker run --rm \
@@ -158,7 +158,7 @@ const buildProject = async (req, res) => {
             git checkout ${rama} &&
             git pull &&
             docker rm -f ${data.proyect_directory} || true &&
-            docker run -d --name ${data.proyect_directory} -p ${data.puerto}:3000 -v $(pwd):/app -w /app node:18-alpine sh -c "npm install --legacy-peer-deps && npm run build && npm start"`
+            docker run -d --name ${data.proyect_directory} -p ${data.puerto}:3000 -v $(pwd):/app -w /app node:18-alpine sh -c "${data.install_command} && ${build_command} && npm start"`
             , (error, stdout, stderr) => {
             if(error) {
                 console.error(`Error ejecutando el script: ${error.message}`);
