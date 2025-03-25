@@ -2,6 +2,7 @@ const moment = require('moment')
 const { exec } = require('child_process');
 const clientPS = require('../../db');
 const fs = require('fs')
+const path = require('path')
 
 
 const createDominio = async (req, res) => {
