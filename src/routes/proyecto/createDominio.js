@@ -24,8 +24,14 @@ const createDominio = async (req, res) => {
         await clientPS.query(`INSERT INTO dominios (dominio, configuracion, proyecto_id) VALUES ($1, $2, $3)`, [dominio, configuraciones, proyect_id])
 
         const envFilePath = path.join(`/etc/nginx/sites-available/`, dominio);
+        try {
+            fs.writeFileSync(envFilePath, configuraciones, 'utf8');
+        }
+        catch(err) {
+            console.log("ERRROR AA")
+            console.log(err)
+        }
 
-        fs.writeFileSync(envFilePath, configuraciones, 'utf8');
 
         res.send()
     }
