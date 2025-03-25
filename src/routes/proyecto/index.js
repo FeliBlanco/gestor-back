@@ -5,6 +5,8 @@ const getProjects = require('./getProjects');
 const getProjectByGroupAndProjectId = require('./getProject');
 const getGroupProjects = require('./getGroupProjects');
 const buildProject = require('./buildProject');
+const createDominio = require('./createDominio');
+const getDominios = require('./getDominios');
 
 const app = Router();
 
@@ -12,7 +14,9 @@ app.post('/', createProject)
 app.put('/:id', updateProject)
 app.get('/', getProjects)
 
+app.post('/dominio', createDominio);
 app.get('/build/:id', buildProject);
+app.get('/dominios/:proyecto', getDominios)
 app.get('/:grupo/:proyecto', getProjectByGroupAndProjectId)
 
 app.get('/:grupo', getGroupProjects)
