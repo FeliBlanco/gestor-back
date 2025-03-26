@@ -119,21 +119,28 @@ const createProject = async (req, res) => {
             } else {
 
                 const dominio = `${proyect_directory}-${nombre}.${process.env.DOMINIO}`
-                const resposeD = await axios.post(`https://api.cloudflare.com/client/v4/zones/${process.env.CLOUDFLARE_ZONE_ID}/dns_records`, {
-                    type: "A", // Tipo de registro (A para IPv4, CNAME para redireccionar)
-                    name: dominio, // Nombre del subdominio (ej: api.tudominio.com)
-                    content: `${process.env.IP_SERVER}`, // IP a la que apunta el subdominio
-                    ttl: 1, // TTL (1 = automático)
-                    proxied: false, // false si no quieres que pase por Cloudflare 
-                    comment:"test"
-                },
-                {
-                    headers: {
-                        "X-Auth-Email": "blancofeli9@gmail.com",
-                        "X-Auth-Key": process.env.CLOUDFLARE_TOKEN,
-                        "Content-Type": "application/json"
-                    }
-                })
+                try {
+
+                    const resposeD = await axios.post(`https://api.cloudflare.com/client/v4/zones/${process.env.CLOUDFLARE_ZONE_ID}/dns_records`, {
+                        type: "A", // Tipo de registro (A para IPv4, CNAME para redireccionar)
+                        name: dominio, // Nombre del subdominio (ej: api.tudominio.com)
+                        content: `${process.env.IP_SERVER}`, // IP a la que apunta el subdominio
+                        ttl: 1, // TTL (1 = automático)
+                        proxied: false, // false si no quieres que pase por Cloudflare 
+                        comment:"test"
+                    },
+                    {
+                        headers: {
+                            "X-Auth-Email": "blancofeli9@gmail.com",
+                            "X-Auth-Key": process.env.CLOUDFLARE_TOKEN,
+                            "Content-Type": "application/json"
+                        }
+                    })
+                }
+                catch(err_dns) {
+                    console.log("EL ERROR")
+                    console.log(err_dns.response.data.errors)
+                }
 
                 
 
@@ -153,8 +160,6 @@ const createProject = async (req, res) => {
     })
     .catch(err => {
         console.log(err)
-        console.log("EL ERROR")
-        console.log(err.response.data.errors)
         res.status(503).send()
     })
 }
