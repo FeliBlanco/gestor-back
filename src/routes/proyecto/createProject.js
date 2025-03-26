@@ -131,7 +131,7 @@ const createProject = async (req, res) => {
                     },
                     {
                         headers: {
-                            "X-Auth-Email": "blancofeli9@gmail.com",
+                            "X-Auth-Email": "Tbfrq7bvh4@privaterelay.appleid.com",
                             "X-Auth-Key": process.env.CLOUDFLARE_TOKEN,
                             "Content-Type": "application/json"
                         }
@@ -145,7 +145,7 @@ const createProject = async (req, res) => {
                 
 
                 const configuraciones = `server {\n\tlisten 80;\n\tserver_name ${dominio}.${process.env.DOMINIO};\n\tlocation / {\n\n\t}\n}`
-                const responseDNS = await clientPS.query(`INSERT INTO dominios (dominio, configuracion, proyecto_id) VALUES ($1, $2, $3)`, [dominio, configuraciones, response.rows[0].id])
+                const responseDNS = await clientPS.query(`INSERT INTO dominios (dominio, configuracion, proyecto_id) VALUES ($1, $2, $3) RETURNING id`, [dominio, configuraciones, response.rows[0].id])
                 actualizarDNS(responseDNS.rows[0].id)
 
                 if(frameworkData.rows[0].tipo == "back") {
