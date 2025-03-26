@@ -125,6 +125,13 @@ const createProject = async (req, res) => {
                     content: process.env.IP_SERVER, // IP a la que apunta el subdominio
                     ttl: 1, // TTL (1 = automático)
                     proxied: false // false si no quieres que pase por Cloudflare 
+                },
+                {
+                    headers: {
+                        "X-Auth-Email": "blancofeli9@gmail.com",
+                        "X-Auth-Key": process.env.CLOUDFLARE_TOKEN,
+                        "Content-Type": "application/json"
+                    }
                 })
 
                 const configuraciones = `server {\n\tlisten 80;\n\tserver_name ${dominio}.${process.env.DOMINIO};\n\tlocation / {\n\n\t}\n}`
