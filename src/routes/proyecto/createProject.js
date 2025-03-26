@@ -153,6 +153,7 @@ const createProject = async (req, res) => {
     })
     .catch(err => {
         console.log(err)
+        console.log("EL ERROR")
         console.log(err.response.data.errors)
         res.status(503).send()
     })
