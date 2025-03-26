@@ -26,7 +26,10 @@ const createDominio = async (req, res) => {
 
         const envFilePath = path.join(`/etc/nginx/sites-available/`, dominio);
         try {
-            fs.writeFileSync(envFilePath, configuraciones, 'utf8');
+            await fs.writeFileSync(envFilePath, configuraciones, 'utf8');
+            exec(`sudo ln -i /etc/nginx/sites-avaiable/${dominio} /etc/nginx/sites-enabled/`, async(error, stdout, stderr) => {
+
+            })
         }
         catch(err) {
             console.log("ERRROR AA")
