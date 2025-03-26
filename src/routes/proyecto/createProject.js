@@ -119,12 +119,13 @@ const createProject = async (req, res) => {
             } else {
 
                 const dominio = `${proyect_directory}-${nombre}.${process.env.DOMINIO}`
-                await axios.post(`https://api.cloudflare.com/client/v4/zones/${process.env.CLOUDFLARE_ZONE_ID}/dns_records`, {
+                const resposeD = await axios.post(`https://api.cloudflare.com/client/v4/zones/${process.env.CLOUDFLARE_ZONE_ID}/dns_records`, {
                     type: "A", // Tipo de registro (A para IPv4, CNAME para redireccionar)
                     name: dominio, // Nombre del subdominio (ej: api.tudominio.com)
-                    content: process.env.IP_SERVER, // IP a la que apunta el subdominio
+                    content: `${process.env.IP_SERVER}`, // IP a la que apunta el subdominio
                     ttl: 1, // TTL (1 = automático)
-                    proxied: false // false si no quieres que pase por Cloudflare 
+                    proxied: false, // false si no quieres que pase por Cloudflare 
+                    comment:"test"
                 },
                 {
                     headers: {
@@ -133,6 +134,8 @@ const createProject = async (req, res) => {
                         "Content-Type": "application/json"
                     }
                 })
+
+                console.log(resposeD.response.data.errors)
 
                 const configuraciones = `server {\n\tlisten 80;\n\tserver_name ${dominio}.${process.env.DOMINIO};\n\tlocation / {\n\n\t}\n}`
                 const responseDNS = await clientPS.query(`INSERT INTO dominios (dominio, configuracion, proyecto_id) VALUES ($1, $2, $3)`, [dominio, configuraciones, response.rows[0].id])
