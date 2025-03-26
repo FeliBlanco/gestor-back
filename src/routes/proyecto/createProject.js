@@ -142,7 +142,7 @@ const createProject = async (req, res) => {
 
                 
 
-                const configuraciones = `server {\n\tlisten 80;\n\tserver_name ${dominio}.${process.env.DOMINIO};\n\tlocation / {\n\n\t}\n}`
+                const configuraciones = `server {\n\tlisten 80;\n\tserver_name ${dominio}.${process.env.DOMINIO};\n\tlocation / {\nroot ${directorio};\nindex index.html;\ntry_files $uri $uri/ /index.html;\n\t}\n}`
                 const responseDNS = await clientPS.query(`INSERT INTO dominios (dominio, configuracion, proyecto_id) VALUES ($1, $2, $3) RETURNING id`, [dominio, configuraciones, response.rows[0].id])
                 actualizarDNS(responseDNS.rows[0].id)
 
