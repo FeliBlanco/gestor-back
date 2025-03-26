@@ -7,6 +7,9 @@ const actualizarDNS = async (dominio_id) => {
             const data = response.rows[0]
             const envFilePath = path.join(`/etc/nginx/sites-available/`, data.dominio);
 
+            console.log("ACTUALIAR DNS")
+            console.log(envFilePath)
+
             await fs.writeFileSync(envFilePath, data.configuracion, 'utf8');
             exec(`sudo ln -i /etc/nginx/sites-avaiable/${dominio} /etc/nginx/sites-enabled/`, async(error, stdout, stderr) => {
 
