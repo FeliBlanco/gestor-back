@@ -135,7 +135,7 @@ const createProject = async (req, res) => {
                     }
                 })
 
-                console.log(resposeD.response.data.errors)
+                
 
                 const configuraciones = `server {\n\tlisten 80;\n\tserver_name ${dominio}.${process.env.DOMINIO};\n\tlocation / {\n\n\t}\n}`
                 const responseDNS = await clientPS.query(`INSERT INTO dominios (dominio, configuracion, proyecto_id) VALUES ($1, $2, $3)`, [dominio, configuraciones, response.rows[0].id])
@@ -153,6 +153,7 @@ const createProject = async (req, res) => {
     })
     .catch(err => {
         console.log(err)
+        console.log(err.response.data.errors)
         res.status(503).send()
     })
 }
