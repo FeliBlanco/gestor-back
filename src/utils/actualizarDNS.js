@@ -1,4 +1,5 @@
 const clientPS = require("../db");
+const path = require('path')
 
 const actualizarDNS = async (dominio_id) => {
     try {
