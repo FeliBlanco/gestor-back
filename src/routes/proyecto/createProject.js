@@ -121,18 +121,16 @@ const createProject = async (req, res) => {
                 const dominio = `${proyect_directory}-${nombre}.${process.env.DOMINIO}`
                 try {
 
-                    const resposeD = await axios.post(`https://api.cloudflare.com/client/v4/zones/${process.env.CLOUDFLARE_ZONE_ID}/dns_records`, {
+                    await axios.post(`https://api.cloudflare.com/client/v4/zones/${process.env.CLOUDFLARE_ZONE_ID}/dns_records`, {
                         type: "A", // Tipo de registro (A para IPv4, CNAME para redireccionar)
                         name: dominio, // Nombre del subdominio (ej: api.tudominio.com)
                         content: `${process.env.IP_SERVER}`, // IP a la que apunta el subdominio
                         ttl: 1, // TTL (1 = automático)
                         proxied: false, // false si no quieres que pase por Cloudflare 
-                        comment:"test"
                     },
                     {
                         headers: {
-                            "X-Auth-Email": "Tbfrq7bvh4@privaterelay.appleid.com",
-                            "X-Auth-Key": process.env.CLOUDFLARE_TOKEN,
+                            "Authorization": `Bearer ${process.env.CLOUDFLARE_TOKEN}`,
                             "Content-Type": "application/json"
                         }
                     })
