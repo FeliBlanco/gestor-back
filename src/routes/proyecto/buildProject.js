@@ -157,14 +157,16 @@ const buildProject = async (req, res) => {
         
             const comandos = []
 
-            if(data.install_command && data.install_command.length > 1) {
-                comandos.push(data.install_command)
+            const comands_decode = JSON.parse(data.build_settings)
+
+            if(comands_decode.install_command && comands_decode.install_command.length > 1) {
+                comandos.push(comands_decode.install_command)
             }
-            if(data.build_command && data.build_command.length > 1) {
-                comandos.push(data.build_command)
+            if(comands_decode.build_command && comands_decode.build_command.length > 1) {
+                comandos.push(comands_decode.build_command)
             }
-            if(data.start_command && data.start_command.length > 1) {
-                comandos.push(data.start_command)
+            if(comands_decode.start_command && comands_decode.start_command.length > 1) {
+                comandos.push(comands_decode.start_command)
             }
             console.log(comandos)
         
