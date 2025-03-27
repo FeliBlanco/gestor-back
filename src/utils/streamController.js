@@ -40,7 +40,10 @@ setInterval(() => {
     streams.forEach((stream, index) => {
         if(!(stream.date + 10000 < Date.now())) {
             nuevo_streams.push(stream)
-        } else console.log("ELIMINAR STREAM")
+        } else {
+            console.log("ELIMINAR STREAM")
+            stream.el_stream.kill()
+        }
     })
 }, 5000)
 
