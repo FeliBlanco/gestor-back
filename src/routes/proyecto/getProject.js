@@ -13,7 +13,14 @@ const getProjectByGroupAndProjectId = async (req, res) => {
 
             exec(`docker inspect ${result.rows[0].proyect_directory.toLowerCase()}`, (error, stdout, stderr) => {
                 if(stdout) {
-                    console.log(stdout[0].State)
+
+                    try {
+                        const data_docker = JSON.parse(stdout)
+                        console.log(data_docker[0].State)
+                    }
+                    catch(err) {
+                        
+                    }
                 }
             })
         res.send(result.rows[0])
