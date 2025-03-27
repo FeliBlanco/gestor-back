@@ -7,7 +7,7 @@ const getLogs = async (req, res) => {
 
     const io = getIO()
 
-    const proyecto = await clientPS.query(`SELECT proyect_directory FROM projectos WHERE id = $1`, [project])
+    const proyecto = await clientPS.query(`SELECT proyect_directory FROM proyectos WHERE id = $1`, [project])
     if(proyecto.rowCount == 0) return res.status(404).send()
 
     const logStream = spawn("docker", ["logs", "-f", data.proyect_directory.toLowerCase()]);
