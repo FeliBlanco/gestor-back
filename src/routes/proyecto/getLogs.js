@@ -21,6 +21,7 @@ const getLogs = async (req, res) => {
     });
 
     io.on('log-project-off', () => {
+        console.log("STRAM KILL")
         logStream.kill();
     })
 
