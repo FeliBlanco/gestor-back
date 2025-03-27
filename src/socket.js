@@ -1,5 +1,5 @@
 const { Server } = require('socket.io');
-const { updateStreamDate } = require('./utils/streamController');
+const { updateStreamDate, createStream } = require('./utils/streamController');
 const clientPS = require('./db');
 
 let io = null;
