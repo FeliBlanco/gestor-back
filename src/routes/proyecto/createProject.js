@@ -118,7 +118,7 @@ const createProject = async (req, res) => {
                 console.log(error)
             } else {
 
-                const dominio = `${grupoData}-${proyect_directory}.${process.env.DOMINIO}`
+                const dominio = `${grupoData.rows[0].usuario.toLowerCase()}-${proyect_directory}.${process.env.DOMINIO}`
                 try {
 
                     await axios.post(`https://api.cloudflare.com/client/v4/zones/${process.env.CLOUDFLARE_ZONE_ID}/dns_records`, {

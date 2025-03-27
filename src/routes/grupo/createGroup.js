@@ -7,7 +7,7 @@ const createGroup = async (req, res) => {
             nombre
         } = req.body;
 
-        let usuario = nombre.replaceAll(' ', '-')
+        let usuario = nombre.replaceAll(' ', '-').toLowerCase()
         const search = await clientPS.query(`SELECT id FROM grupos where usuario = $1`, [usuario]);
         if(search.rowCount != 0) {
             usuario = `${usuario}-${search.rowCount + 1}`
