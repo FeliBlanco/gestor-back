@@ -42,8 +42,7 @@ setInterval(() => {
             nuevo_streams.push(stream)
         } else {
             console.log("ELIMINAR STREAM")
-            console.log(stream)
-            stream.el_stream.kill()
+            stream.stream.kill()
         }
     })
     streams = nuevo_streams;
