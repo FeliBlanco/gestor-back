@@ -91,8 +91,8 @@ const createProject = async (req, res) => {
                 await clientPS.query(`INSERT INTO env_vars (proyecto, key, value) VALUES ($1, $2, $3)`, [response.rows[0].id, env_var.key, env_var.value])
             }
         }
+        let puerto_usar = 0;
         if(frameworkData.rows[0].tipo == "back") {
-            let puerto_usar = 0;
             let intentos = 0;
             while(puerto_usar == 0) {
                 const port = await getPort({
@@ -118,7 +118,7 @@ const createProject = async (req, res) => {
                 console.log(error)
             } else {
 
-                const dominio = `${proyect_directory}-${nombre}.${process.env.DOMINIO}`
+                const dominio = `${proyect_directory}.${process.env.DOMINIO}`
                 try {
 
                     await axios.post(`https://api.cloudflare.com/client/v4/zones/${process.env.CLOUDFLARE_ZONE_ID}/dns_records`, {
@@ -140,17 +140,19 @@ const createProject = async (req, res) => {
                     console.log(err_dns.response.data.errors)
                 }
 
+                let configuraciones = ""
                 
-
-                const configuraciones = `server {\n\tlisten 80;\n\tserver_name [dominio];\n\tlocation / {\nroot ${directorio};\nindex index.html;\ntry_files $uri $uri/ /index.html;\n\t}\n}`
-                const responseDNS = await clientPS.query(`INSERT INTO dominios (dominio, configuracion, proyecto_id) VALUES ($1, $2, $3) RETURNING id`, [dominio, configuraciones, response.rows[0].id])
-                actualizarDNS(responseDNS.rows[0].id)
-
                 if(frameworkData.rows[0].tipo == "back") {
                     exec(`cd ${directorio} && git clone ${git_repo} .`, (errorC, stdoutC, stderrC) => {
 
                     })
+                    configuraciones = `server {\n\tlisten 80;\n\tserver_name [dominio];\n\tlocation / {\nproxy_pass http://localhost:${puerto_usar};\nproxy_http_version 1.1;\nproxy_set_header Upgrade $http_upgrade;\nproxy_set_header Connection 'upgrade';\n proxy_set_header Host $host;\nproxy_cache_bypass $http_upgrade;\n\t}\n}`
+                } else if(frameworkData.rows[0].tipo == "front") {
+                    configuraciones = `server {\n\tlisten 80;\n\tserver_name [dominio];\n\tlocation / {\nroot ${directorio};\nindex index.html;\ntry_files $uri $uri/ /index.html;\n\t}\n}`
                 }
+
+                const responseDNS = await clientPS.query(`INSERT INTO dominios (dominio, configuracion, proyecto_id) VALUES ($1, $2, $3) RETURNING id`, [dominio, configuraciones, response.rows[0].id])
+                actualizarDNS(responseDNS.rows[0].id)
             }
 
         })
