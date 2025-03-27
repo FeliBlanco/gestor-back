@@ -26,10 +26,10 @@ const getLogs = async (req, res) => {
             data: data.toString()
         });
     });
-    
-    io.on('disconnect', () => {
+
+    io.on('log-project-interval', () => {
         console.log("STRAM KILL")
-        logStream.kill();
+        //logStream.kill();
     })
 
     res.send()
