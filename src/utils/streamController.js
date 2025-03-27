@@ -2,7 +2,7 @@
 const { spawn } = require("child_process");
 let streams = []
 
-const createStream = (project_id, docker_name, io) => {
+const createStream = (project_id, docker_name, socket) => {
 
     const stream_id = `${Date.now()}${Math.random() * 10}`
 
@@ -14,11 +14,11 @@ const createStream = (project_id, docker_name, io) => {
     })
 
     el_stream.stdout.on("data", (data) => {
-        io.to(`stream-${stream_id}`).emit("log-project",data.toString());
+        socket.emit("log-project",data.toString());
     });
 
     el_stream.stderr.on("data", (data) => {
-        io.to(`stream-${stream_id}`).emit("log-project", data.toString());
+        socket.emit("log-project", data.toString());
     });
     return stream_id;
 }
