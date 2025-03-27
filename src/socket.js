@@ -19,18 +19,13 @@ const connectSocket = app => {
 
             const proyecto = await clientPS.query(`SELECT proyect_directory FROM proyectos WHERE id = $1`, [project_id])
             if(proyecto.rowCount != 0) {
-                const stream_id = createStream(project_id, proyecto.rows[0].proyect_directory.toLowerCase(), socket)
-    
+                createStream(project_id, proyecto.rows[0].proyect_directory.toLowerCase(), socket)
                 console.log("JOIN PROJECT")
                 //socket.join(`stream-${stream_id}`)
-            }
-    
-        
+            }    
         })
-        socket.on('log-project-interval', () => {
-            console.log("STRAM KILL")
-            //logStream.kill();
-            updateStreamDate()
+        socket.on('log-senal', (stream_id) => {
+            updateStreamDate(stream_id)
         })
     })
 }

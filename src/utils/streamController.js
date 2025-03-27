@@ -10,7 +10,8 @@ const createStream = (project_id, docker_name, socket) => {
     streams.push({
         stream_id,
         project_id,
-        stream: el_stream
+        stream: el_stream,
+        date: Date.now()
     })
 
     el_stream.stdout.on("data", (data) => {
@@ -20,12 +21,27 @@ const createStream = (project_id, docker_name, socket) => {
     el_stream.stderr.on("data", (data) => {
         socket.emit("log-project", data.toString());
     });
+
+    socket.emit('log-senal', stream_id)
+
     return stream_id;
 }
 
 const updateStreamDate = stream_id => {
-
+    const stream = streams.findIndex(j => j.stream_id == stream_id)
+    if(stream != -1) {
+        streams[stream].date = Date.now()
+    }
 }
+
+setInterval(() => {
+    streams.forEach((stream, index) => {
+        if(stream.date + 10000 < Date.now()) {
+            console.log("ELIMINAR STREAM")
+            streams = streams.splice(index, 1)
+        }
+    })
+}, 5000)
 
 module.exports = {
     createStream,
