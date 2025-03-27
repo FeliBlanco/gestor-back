@@ -40,6 +40,7 @@ setInterval(() => {
         if(!(stream.date + 10000 < Date.now())) {
             nuevo_streams.push(stream)
         } else {
+            console.log("KILL STREAM")
             stream.stream.kill()
         }
     })
