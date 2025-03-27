@@ -45,6 +45,7 @@ setInterval(() => {
             stream.el_stream.kill()
         }
     })
+    streams = nuevo_streams;
 }, 5000)
 
 module.exports = {
