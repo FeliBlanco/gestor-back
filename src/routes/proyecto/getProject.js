@@ -1,4 +1,5 @@
 const clientPS = require("../../db");
+const { exec } = require('child_process')
 
 const getProjectByGroupAndProjectId = async (req, res) => {
     const proyecto = req.params.proyecto;
@@ -9,6 +10,12 @@ const getProjectByGroupAndProjectId = async (req, res) => {
 
         const result = await clientPS.query(`SELECT P.*, D.dominio AS dominio FROM proyectos P LEFT JOIN dominios D ON D.proyecto_id = P.id WHERE P.usuario = $1 AND P.grupo = $2 LIMIT 1`, [proyecto, grupoData.rows[0].id])
         if(result.rowCount == 0) return res.status(404).send()
+
+            exec('docker inspect data.proyect_directory.toLowerCase()', (error, stdout, stderr) => {
+                if(stdout) {
+                    console.log(stdout)
+                }
+            })
         res.send(result.rows[0])
     }
     catch(err) {
