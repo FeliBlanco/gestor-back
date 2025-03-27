@@ -1,4 +1,5 @@
 const { Server } = require('socket.io');
+const { updateStreamDate } = require('./utils/streamController');
 
 let io = null;
 
@@ -13,9 +14,14 @@ const connectSocket = app => {
 
     io.on('connection', (socket) => {
         console.log("CONECTO USER")
+        socket.on('log-project-join', (project_id) => {
+            console.log("JOIN PROJECT")
+            socket.join(`project-${project_id}`)
+        })
         socket.on('log-project-interval', () => {
             console.log("STRAM KILL")
             //logStream.kill();
+            updateStreamDate()
         })
     })
 }
