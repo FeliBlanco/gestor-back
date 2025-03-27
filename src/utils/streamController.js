@@ -21,17 +21,11 @@ const createStream = (project_id, docker_name, io) => {
     }
 
     el_stream.stdout.on("data", (data) => {
-        io.to(`project-${project_id}`).emit("log-project", {
-            project,
-            data: data.toString()
-        });
+        io.to(`project-${project_id}`).emit("log-project",data.toString());
     });
 
     el_stream.stderr.on("data", (data) => {
-        io.to(`project-${project_id}`).emit("log-project", {
-            project,
-            data: data.toString()
-        });
+        io.to(`project-${project_id}`).emit("log-project", data.toString());
     });
 }
 
