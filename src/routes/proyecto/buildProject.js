@@ -157,7 +157,7 @@ const buildProject = async (req, res) => {
         
             const comandos = []
 
-            const comands_decode = JSON.parse(framework.build_settings)
+            const comands_decode = JSON.parse(framework.rows[0].build_settings)
 
             if(comands_decode.install_command && comands_decode.install_command.length > 1) {
                 comandos.push(comands_decode.install_command)
