@@ -166,6 +166,7 @@ const buildProject = async (req, res) => {
             if(data.start_command && data.start_command.length > 1) {
                 comandos.push(data.start_command)
             }
+            console.log(comandos)
         
             const child = exec(`
             cd ${global.URL_PROYECTOS}${grupo.rows[0].usuario}/${data.proyect_directory} &&
