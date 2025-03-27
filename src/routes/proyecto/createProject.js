@@ -24,6 +24,7 @@ const createProject = async (req, res) => {
     const {
         build_command,
         install_command,
+        start_command,
         output_directory
     } = build_settings
 
@@ -59,6 +60,7 @@ const createProject = async (req, res) => {
         install_command,
         output_directory,
         proyect_directory,
+        start_command,
         grupo
         ) VALUES (
          $1,
@@ -71,7 +73,8 @@ const createProject = async (req, res) => {
          $8,
          $9,
          $10,
-         $11
+         $11,
+         $12
          ) RETURNING id`, [
             nombre,
             git_repo,
@@ -83,6 +86,7 @@ const createProject = async (req, res) => {
             install_command,
             output_directory,
             proyect_directory,
+            start_command,
             grupo
         ])
     .then(async response => {
