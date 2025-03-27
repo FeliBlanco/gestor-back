@@ -176,7 +176,7 @@ const buildProject = async (req, res) => {
             git pull &&
             docker rm -f ${data.proyect_directory.toLowerCase()} || true &&
             docker run -d --name ${data.proyect_directory.toLowerCase()} -p ${data.puerto}:8000 -v $(pwd):/app -w /app ${tipo_sistema_docker} sh -c "${comandos.join(' && ')}"`
-            , (error, stdout, stderr) => {
+            , async (error, stdout, stderr) => {
             if(error) {
                 console.error(`Error ejecutando el script: ${error.message}`);
                 clientPS.query(`UPDATE proyectos SET actualizando = 0 WHERE id = $1`, [data.id]);
@@ -185,7 +185,17 @@ const buildProject = async (req, res) => {
             if(stderr) {
                 console.warn(`Advertencias: ${stderr}`);
             }
-            clientPS.query(`UPDATE proyectos SET actualizando = 0 WHERE id = $1`, [data.id]);
+
+            exec('git rev-parse --short HEAD', async (error2, stdout2) => {
+                if(!error2) {
+                    await clientPS.query(`UPDATE proyectos SET commit_build = $1 WHERE id = $2`, [stdout2, data.id]);
+                    if(build_log && build_log.rowCount > 0) {
+                        await clientPS.query(`UPDATE builds SET commit = $1 WHERE id = $2`, [stdout2, build_log.rows[0].id]);
+                    }
+                }
+            })
+            await clientPS.query(`UPDATE proyectos SET actualizando = 0, fecha_build = $1 WHERE id = $2`, [fecha, data.id]);
+
             res.json({ output: stdout || stderr });
         });
 
