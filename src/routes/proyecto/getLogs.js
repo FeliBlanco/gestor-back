@@ -2,6 +2,7 @@ const { spawn } = require("child_process");
 const clientPS = require("../../db");
 const { getIO } = require("../../socket");
 
+
 const getLogs = async (req, res) => {
     const project = req.params.proyecto;
 
@@ -20,11 +21,10 @@ const getLogs = async (req, res) => {
         io.emit("log-project", data.toString());
     });
 
-    io.on('log-project-off', () => {
+    io.on('disconnect', () => {
         console.log("STRAM KILL")
         logStream.kill();
     })
-
     res.send()
 }
 
