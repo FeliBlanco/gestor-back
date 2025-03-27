@@ -1,6 +1,7 @@
 const clientPS = require("../db");
 const path = require('path')
 const fs = require('fs')
+const { exec } = require('child_process');
 
 const actualizarDNS = async (dominio_id) => {
     try {
