@@ -153,12 +153,25 @@ const buildProject = async (req, res) => {
     } else if(tipo_sistema == "back") {
         clientPS.query(`UPDATE proyectos SET actualizando = 1 WHERE id = $1`, [data.id]);
         //const child = exec(`cd ${global.URL_PROYECTOS}${grupo.rows[0].usuario}/${data.proyect_directory} && git checkout ${rama} && git pull && docker-compose up --build -d`, (error, stdout, stderr) => {
-        const child = exec(`
+        
+            const comandos = []
+
+            if(data.install_command && data.install_command.length > 1) {
+                comandos.push(data.install_command)
+            }
+            if(data.build_command && data.build_command.length > 1) {
+                comandos.push(data.build_command)
+            }
+            if(data.start_command && data.start_command.length > 1) {
+                comandos.push(data.start_command)
+            }
+        
+            const child = exec(`
             cd ${global.URL_PROYECTOS}${grupo.rows[0].usuario}/${data.proyect_directory} &&
             git checkout ${rama} &&
             git pull &&
             docker rm -f ${data.proyect_directory} || true &&
-            docker run -d --name ${data.proyect_directory} -p ${data.puerto}:8000 -v $(pwd):/app -w /app node:18-alpine sh -c "${data.install_command} && ${build_command} && npm start"`
+            docker run -d --name ${data.proyect_directory} -p ${data.puerto}:8000 -v $(pwd):/app -w /app node:18-alpine sh -c "${comandos.join(' && ')}"`
             , (error, stdout, stderr) => {
             if(error) {
                 console.error(`Error ejecutando el script: ${error.message}`);
