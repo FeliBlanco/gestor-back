@@ -170,6 +170,7 @@ const buildProject = async (req, res) => {
             }
             console.log(comandos)
         
+            console.log(`Deploying in ${global.URL_PROYECTOS}${grupo.rows[0].usuario}/${data.proyect_directory}...`)
             const child = exec(`
             cd ${global.URL_PROYECTOS}${grupo.rows[0].usuario}/${data.proyect_directory} &&
             git checkout ${rama} &&
