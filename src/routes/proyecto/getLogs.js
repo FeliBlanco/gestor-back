@@ -13,14 +13,18 @@ const getLogs = async (req, res) => {
 
     const logStream = spawn("docker", ["logs", "-f", proyecto.rows[0].proyect_directory.toLowerCase()]);
 
-    io.join('log-'+project)
-
     logStream.stdout.on("data", (data) => {
-        io.to('log-'+project).emit("log-project", data.toString());
+        io.emit("log-project", {
+            project,
+            data: data.toString()
+        });
     });
     
     logStream.stderr.on("data", (data) => {
-        io.to('log-'+project).emit("log-project", data.toString());
+        io.emit("log-project", {
+            project,
+            data: data.toString()
+        });
     });
 
     io.on('disconnect', () => {
