@@ -126,7 +126,7 @@ const createProject = async (req, res) => {
                         name: dominio, // Nombre del subdominio (ej: api.tudominio.com)
                         content: `${process.env.IP_SERVER}`, // IP a la que apunta el subdominio
                         ttl: 1, // TTL (1 = automático)
-                        proxied: false, // false si no quieres que pase por Cloudflare 
+                        proxied: true, // false si no quieres que pase por Cloudflare 
                     },
                     {
                         headers: {
