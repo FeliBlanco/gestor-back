@@ -35,6 +35,7 @@ const buildProject = async (req, res) => {
     if(grupo.rowCount == 0) return res.status(503).send("No se encontró el grupo")
 
     const tipo_sistema = framework.rows[0].tipo;
+    const tipo_sistema_docker  = framework.rows[0].tipo_sistema_docker ;
 
     const fecha = moment().format('D/MM/YYYY HH:mm:ss')
             
@@ -171,14 +172,13 @@ const buildProject = async (req, res) => {
             git checkout ${rama} &&
             git pull &&
             docker rm -f ${data.proyect_directory} || true &&
-            docker run -d --name ${data.proyect_directory} -p ${data.puerto}:8000 -v $(pwd):/app -w /app node:18-alpine sh -c "${comandos.join(' && ')}"`
+            docker run -d --name ${data.proyect_directory} -p ${data.puerto}:8000 -v $(pwd):/app -w /app ${tipo_sistema_docker} sh -c "${comandos.join(' && ')}"`
             , (error, stdout, stderr) => {
             if(error) {
                 console.error(`Error ejecutando el script: ${error.message}`);
                 clientPS.query(`UPDATE proyectos SET actualizando = 0 WHERE id = $1`, [data.id]);
                 return res.status(500).json({ error: `Error: ${error.message}` });
             }
-            
             if(stderr) {
                 console.warn(`Advertencias: ${stderr}`);
             }
