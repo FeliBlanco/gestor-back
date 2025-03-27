@@ -35,13 +35,11 @@ const updateStreamDate = stream_id => {
 }
 
 setInterval(() => {
-    console.log("Buscar para eliminar")
     let nuevo_streams = []
     streams.forEach((stream, index) => {
         if(!(stream.date + 10000 < Date.now())) {
             nuevo_streams.push(stream)
         } else {
-            console.log("ELIMINAR STREAM")
             stream.stream.kill()
         }
     })
