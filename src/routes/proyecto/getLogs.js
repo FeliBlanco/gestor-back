@@ -13,24 +13,26 @@ const getLogs = async (req, res) => {
 
     const logStream = spawn("docker", ["logs", "-f", proyecto.rows[0].proyect_directory.toLowerCase()]);
 
-    logStream.stdout.on("data", (data) => {
-        io.emit("log-project", {
-            project,
-            data: data.toString()
+    io.on("connection", (socket) => {
+        logStream.stdout.on("data", (data) => {
+            socket.emit("log-project", {
+                project,
+                data: data.toString()
+            });
         });
-    });
-    
-    logStream.stderr.on("data", (data) => {
-        io.emit("log-project", {
-            project,
-            data: data.toString()
+        
+        logStream.stderr.on("data", (data) => {
+            socket.emit("log-project", {
+                project,
+                data: data.toString()
+            });
         });
-    });
-
-    io.on('disconnect', () => {
-        console.log("STRAM KILL")
-        logStream.kill();
+        socket.on('disconnect', () => {
+            console.log("STRAM KILL")
+            logStream.kill();
+        })
     })
+
     res.send()
 }
 
