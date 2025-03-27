@@ -1,11 +1,8 @@
 
 const { spawn } = require("child_process");
-const { getIO } = require("../socket");
-
 let streams = []
 
-const createStream = (project_id, docker_name) => {
-    const io = getIO()
+const createStream = (project_id, docker_name, io) => {
 
     const stream = streams.find(j => j.project_id == project_id);
 
