@@ -27,10 +27,14 @@ const getLogs = async (req, res) => {
         });
     });
 
-    io.on('log-project-interval', () => {
-        console.log("STRAM KILL")
-        //logStream.kill();
+    io.on('connection', (socket) => {
+        console.log("CONECTO USER")
+        socket.on('log-project-interval', () => {
+            console.log("STRAM KILL")
+            //logStream.kill();
+        })
     })
+
 
     res.send()
 }
