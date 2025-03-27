@@ -16,7 +16,7 @@ const actualizarDNS = async (dominio_id) => {
             const conf = data.configuracion.replace('[dominio]', data.dominio.toLowerCase())
 
             await fs.writeFileSync(envFilePath, conf, 'utf8');
-            exec(`sudo ln -i /etc/nginx/sites-available/${dominio.toLowerCase()} /etc/nginx/sites-enabled/`, async(error, stdout, stderr) => {
+            exec(`sudo ln -i /etc/nginx/sites-available/${dominio.toLowerCase()} /etc/nginx/sites-enabled/ && sudo systemctl restart nginx`, async(error, stdout, stderr) => {
 
             })
         }

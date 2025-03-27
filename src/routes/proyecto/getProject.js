@@ -16,7 +16,6 @@ const getProjectByGroupAndProjectId = async (req, res) => {
                 if(stdout) {
                     try {
                         const data_docker = JSON.parse(stdout)
-                        console.log(data_docker[0].State)
                         status = data_docker[0].State.Status;
                     }
                     catch(err) {
