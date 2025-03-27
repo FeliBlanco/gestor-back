@@ -13,6 +13,10 @@ const connectSocket = app => {
 
     io.on('connection', (socket) => {
         console.log("CONECTO USER")
+        socket.on('log-project-interval', () => {
+            console.log("STRAM KILL")
+            //logStream.kill();
+        })
     })
 }
 
