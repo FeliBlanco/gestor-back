@@ -18,8 +18,11 @@ const stopSystem = async (req, res) => {
 
         await clientPS.query(`UPDATE proyectos SET status = 'stopped' WHERE id = $1`, [data.id])
         
-        exec(`docker rm -f ${data.proyect_directory.toLowerCase()} || true`, (err, stdout, stderr) => {
+        exec(`docker rm -f ${data.proyect_directory.toLowerCase()}`, (err, stdout, stderr) => {
             io.to(`project-${data.id}`).emit('change_status', 'stopped')
+            if(err) console.log(err)
+            if(stdout) console.log(stdout)
+            if(stderr) console.log(stderr)
             res.send()
         })
 
