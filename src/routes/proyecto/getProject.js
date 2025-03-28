@@ -31,8 +31,9 @@ const getProjectByGroupAndProjectId = async (req, res) => {
         `, [proyecto, grupoData.rows[0].id])
         if(result.rowCount == 0) return res.status(404).send()
 
-            let status = "stopped"
-            exec(`docker inspect ${result.rows[0].proyect_directory.toLowerCase()}`, (error, stdout, stderr) => {
+            let status = "stopped";
+
+            exec(`docker inspect ${result.rows[0].proyect_directory.toLowerCase()}`, async (error, stdout, stderr) => {
                 if(stdout) {
                     try {
                         const data_docker = JSON.parse(stdout)
@@ -41,6 +42,9 @@ const getProjectByGroupAndProjectId = async (req, res) => {
                     catch(err) {
 
                     }
+                }
+                if(result.rows[0].status != status) {
+                    await clientPS.query(`UPDATE proyectos SET status = 'stopped' WHERE id = $1`, [data.id])
                 }
                 res.send({
                     ...result.rows[0],

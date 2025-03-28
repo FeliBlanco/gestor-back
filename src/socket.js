@@ -15,6 +15,12 @@ const connectSocket = app => {
 
     io.on('connection', (socket) => {
         console.log("CONECTO USER")
+
+
+        socket.on('join-project', project_id => {
+            socket.join(`project-${project_id}`)
+        })
+
         socket.on('log-project-join', async (project_id) => {
 
             const proyecto = await clientPS.query(`SELECT proyect_directory FROM proyectos WHERE id = $1`, [project_id])

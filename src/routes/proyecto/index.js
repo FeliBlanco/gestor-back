@@ -9,6 +9,8 @@ const createDominio = require('./createDominio');
 const getDominios = require('./getDominios');
 const getConfig = require('./getConfig');
 const getLogs = require('./getLogs');
+const startSystem = require('./startSystem');
+const stopSystem = require('./stopSystem');
 
 const app = Router();
 
@@ -21,6 +23,8 @@ app.get('/build/:id', buildProject);
 app.get('/dominios/:proyecto', getDominios)
 app.get('/config/:proyecto', getConfig)
 app.get('/logs/:proyecto', getLogs)
+app.get('/start/:proyecto', startSystem)
+app.get('/stop/:proyecto', stopSystem)
 app.get('/:grupo/:proyecto', getProjectByGroupAndProjectId)
 
 app.get('/:grupo', getGroupProjects)
