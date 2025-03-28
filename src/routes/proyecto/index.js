@@ -23,8 +23,8 @@ app.get('/build/:id', buildProject);
 app.get('/dominios/:proyecto', getDominios)
 app.get('/config/:proyecto', getConfig)
 app.get('/logs/:proyecto', getLogs)
-app.get('/start/:proyecto', startSystem)
-app.get('/stop/:proyecto', stopSystem)
+app.post('/start/:proyecto', startSystem)
+app.post('/stop/:proyecto', stopSystem)
 app.get('/:grupo/:proyecto', getProjectByGroupAndProjectId)
 
 app.get('/:grupo', getGroupProjects)
