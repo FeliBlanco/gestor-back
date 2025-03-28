@@ -44,7 +44,7 @@ const getProjectByGroupAndProjectId = async (req, res) => {
                     }
                 }
                 if(result.rows[0].status != status) {
-                    await clientPS.query(`UPDATE proyectos SET status = 'stopped' WHERE id = $1`, [result.rows[0].id])
+                    await clientPS.query(`UPDATE proyectos SET status = $1 WHERE id = $2`, [status, result.rows[0].id])
                 }
                 res.send({
                     ...result.rows[0],
