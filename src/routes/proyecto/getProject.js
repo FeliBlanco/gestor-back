@@ -37,7 +37,7 @@ const getProjectByGroupAndProjectId = async (req, res) => {
                 if(stdout) {
                     try {
                         const data_docker = JSON.parse(stdout)
-                        status = data_docker[0].State.Status;
+                        if(data_docker[0].State.Status == "running") status = "running"
                     }
                     catch(err) {
 
