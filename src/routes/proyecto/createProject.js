@@ -40,6 +40,8 @@ const createProject = async (req, res) => {
         proyect_directory = `${usuario}-${search_di.rowCount + 1}`
     }
 
+    proyect_directory = proyect_directory.toLowerCase()
+
     
     const grupoData = await clientPS.query(`SELECT id, usuario FROM grupos WHERE id = $1`, [grupo])
     if(grupoData.rowCount == 0) return res.status(404).send("no se encontro grupo")
@@ -47,7 +49,7 @@ const createProject = async (req, res) => {
     const frameworkData = await clientPS.query(`SELECT * FROM frameworks WHERE id = $1`, [framework])
     if(frameworkData.rowCount == 0) return res.status(404).send("no se encontro framework")
 
-    const docker_name = `${grupoData.rows[0].usuario.toLowerCase()}${proyect_directory.toLowerCase()}`;
+    const docker_name = `${grupoData.rows[0].usuario.toLowerCase()}${proyect_directory}`;
 
     clientPS
     .query(`
