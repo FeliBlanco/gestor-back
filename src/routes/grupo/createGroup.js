@@ -1,5 +1,5 @@
 const clientPS = require("../../db");
-
+const { exec } = require('child_process')
 const createGroup = async (req, res) => {
     try {
         if(!"nombre" in req.body) return res.status(401).send("nombre is required")
