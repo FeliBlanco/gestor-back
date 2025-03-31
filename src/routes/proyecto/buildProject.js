@@ -172,8 +172,8 @@ const buildProject = async (req, res) => {
             cd ${global.URL_PROYECTOS}${grupo.rows[0].usuario}/${data.proyect_directory} &&
             git checkout ${rama} &&
             git pull &&
-            docker rm -f ${data.proyect_directory.toLowerCase()} || true &&
-            docker run -d --name ${data.proyect_directory.toLowerCase()} -p ${data.puerto}:8000 -v $(pwd):/app -w /app ${tipo_sistema_docker} sh -c "${comandos.join(' && ')}"`
+            docker rm -f ${data.docker_name} || true &&
+            docker run -d --name ${data.docker_name} -p ${data.puerto}:8000 -v $(pwd):/app -w /app ${tipo_sistema_docker} sh -c "${comandos.join(' && ')}"`
             , async (error, stdout, stderr) => {
             if(error) {
                 console.error(`Error ejecutando el script: ${error.message}`);

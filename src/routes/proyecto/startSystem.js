@@ -23,7 +23,7 @@ const startSystem = async (req, res) => {
 
         exec(`
             cd ${global.URL_PROYECTOS}${grupo.rows[0].usuario}/${data.proyect_directory} &&
-            docker start ${data.proyect_directory.toLowerCase()}`
+            docker start ${data.docker_name}`
             , async (error, stdout, stderr) => {
                 io.to(`project-${data.id}`).emit('change_status', 'running')
                 if(error) console.log(error)

@@ -18,7 +18,7 @@ const stopSystem = async (req, res) => {
 
         await clientPS.query(`UPDATE proyectos SET status = 'stopped' WHERE id = $1`, [data.id])
         
-        exec(`docker stop ${data.proyect_directory.toLowerCase()}`, (err, stdout, stderr) => {
+        exec(`docker stop ${data.docker_name}`, (err, stdout, stderr) => {
             io.to(`project-${data.id}`).emit('change_status', 'stopped')
             if(err) console.log(err)
             if(stdout) console.log(stdout)

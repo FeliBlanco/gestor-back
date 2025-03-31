@@ -40,11 +40,14 @@ const createProject = async (req, res) => {
         proyect_directory = `${usuario}-${search_di.rowCount + 1}`
     }
 
+    
     const grupoData = await clientPS.query(`SELECT id, usuario FROM grupos WHERE id = $1`, [grupo])
     if(grupoData.rowCount == 0) return res.status(404).send("no se encontro grupo")
         
     const frameworkData = await clientPS.query(`SELECT * FROM frameworks WHERE id = $1`, [framework])
     if(frameworkData.rowCount == 0) return res.status(404).send("no se encontro framework")
+
+    const docker_name = `${grupoData.usuario.toLowerCase()}${proyect_directory.toLowerCase()}`;
 
     clientPS
     .query(`
@@ -61,7 +64,8 @@ const createProject = async (req, res) => {
         output_directory,
         proyect_directory,
         start_command,
-        grupo
+        grupo,
+        docker_name
         ) VALUES (
          $1,
          $2,
@@ -74,7 +78,8 @@ const createProject = async (req, res) => {
          $9,
          $10,
          $11,
-         $12
+         $12,
+         $13
          ) RETURNING id`, [
             nombre,
             git_repo,
@@ -87,7 +92,8 @@ const createProject = async (req, res) => {
             output_directory,
             proyect_directory,
             start_command,
-            grupo
+            grupo,
+            docker_name
         ])
     .then(async response => {
         for(const env_var of enviroment_variables) {

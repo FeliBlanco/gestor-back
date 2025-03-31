@@ -33,7 +33,7 @@ const getProjectByGroupAndProjectId = async (req, res) => {
 
             let status = "stopped";
 
-            exec(`docker inspect ${result.rows[0].proyect_directory.toLowerCase()}`, async (error, stdout, stderr) => {
+            exec(`docker inspect ${result.rows[0].docker_name}`, async (error, stdout, stderr) => {
                 if(stdout) {
                     try {
                         const data_docker = JSON.parse(stdout)
