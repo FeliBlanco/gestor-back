@@ -53,14 +53,6 @@ const buildProject = async (req, res) => {
                 envContent += `${row.key}=${row.value}\n`;
             }
         }); 
-        try {
-            const envFilePath = path.join(global.URL_PROYECTOS, grupo.rows[0].usuario, data.proyect_directory, '.env');
-            fs.writeFileSync(envFilePath, envContent, 'utf8');
-        }
-        catch(err) {
-            console.log(err)
-            console.log("ERROR AL PEGAR EL .ENV")
-        }
     }
 
     const build_log = await clientPS.query(`INSERT INTO builds (proyecto, fecha, commit, rama, status) VALUES ($1, $2, '', $3, 'running') RETURNING id`, [data.id, fecha, data.rama]);
@@ -75,6 +67,7 @@ const buildProject = async (req, res) => {
         const child = exec(`rm -rf /tmp/build_project2 && git clone ${repositorio} /tmp/build_project2 \
         && cd /tmp/build_project2 \
         && git checkout ${rama} \
+        ${envContent.length > 0 ? `&& echo "${envContent}" > /tmp/build_project2/.env \ ` : ''}
         && docker run --rm \
     -v /tmp/build_project2:/app \
     -v ${global.URL_PROYECTOS}${grupo.rows[0].usuario}:/output \
@@ -152,6 +145,14 @@ const buildProject = async (req, res) => {
 
 
     } else if(tipo_sistema == "back") {
+        try {
+            const envFilePath = path.join(global.URL_PROYECTOS, grupo.rows[0].usuario, data.proyect_directory, '.env');
+            fs.writeFileSync(envFilePath, envContent, 'utf8');
+        }
+        catch(err) {
+            console.log(err)
+            console.log("ERROR AL PEGAR EL .ENV")
+        }
         clientPS.query(`UPDATE proyectos SET actualizando = 1 WHERE id = $1`, [data.id]);
         //const child = exec(`cd ${global.URL_PROYECTOS}${grupo.rows[0].usuario}/${data.proyect_directory} && git checkout ${rama} && git pull && docker-compose up --build -d`, (error, stdout, stderr) => {
         
