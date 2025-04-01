@@ -73,7 +73,7 @@ const buildProject = async (req, res) => {
     -v ${global.URL_PROYECTOS}${grupo.rows[0].usuario}:/output \
     -w /app \
     node:18-alpine \
-    sh -c "npm install --legacy-peer-deps && npm run build && cp -r dist/* /output/${data.proyect_directory}"`, async (error, stdout, stderr) => { 
+    sh -c "npm install --legacy-peer-deps && npm run build && cp -r ${data.output_directory}/* /output/${data.proyect_directory}"`, async (error, stdout, stderr) => { 
             if(error) {
                 //console.error(`Error ejecutando el script: ${error.message}`);
                 clientPS.query(`UPDATE proyectos SET actualizando = 0 WHERE id = $1`, [data.id]);
