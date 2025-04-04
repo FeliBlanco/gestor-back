@@ -22,6 +22,7 @@ const updateProject = async (req, res) => {
         if(output_directory) data.output_directory = output_directory;
         if(rama) data.rama = rama;
         if(start_command) data.start_command = start_command;
+        if(system_port) data.system_port = system_port;
         
         if(env_vars) {
             await clientPS.query(`DELETE FROM env_vars WHERE proyecto = $1`, [id])
