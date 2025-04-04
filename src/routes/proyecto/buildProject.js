@@ -67,7 +67,7 @@ const buildProject = async (req, res) => {
         const child = exec(`rm -rf /tmp/build_project2 && git clone ${repositorio} /tmp/build_project2 \
         && cd /tmp/build_project2 \
         && git checkout ${rama} \
-        ${envContent.length > 0 ? `&& echo "${envContent}" > /tmp/build_project2/.env` : ''} \
+        ${envContent.length > 0 ? `&& echo '${envContent}' > /tmp/build_project2/.env` : ''} \
         && docker run --rm \
     -v /tmp/build_project2:/app \
     -v ${global.URL_PROYECTOS}${grupo.rows[0].usuario}:/output \
