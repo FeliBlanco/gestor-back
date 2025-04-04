@@ -11,7 +11,8 @@ const updateProject = async (req, res) => {
             output_directory,
             rama,
             start_command,
-            env_vars
+            env_vars,
+            system_port
         } = req.body;
     
     
