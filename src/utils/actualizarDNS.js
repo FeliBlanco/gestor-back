@@ -28,7 +28,7 @@ const actualizarDNS = async (dominio_id) => {
 
             const directorio = `${global.URL_PROYECTOS}${data.grupo_usuario}/${data.proyect_directory}`
 
-            conf = data.configuracion.replaceAll('[directory]', directorio)
+            conf = conf.replaceAll('[directory]', directorio)
 
 
             await fs.writeFileSync(envFilePath, conf, 'utf8');
