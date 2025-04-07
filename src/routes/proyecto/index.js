@@ -11,6 +11,7 @@ const getConfig = require('./getConfig');
 const getLogs = require('./getLogs');
 const startSystem = require('./startSystem');
 const stopSystem = require('./stopSystem');
+const updateDominio = require('./updateDominio');
 
 const app = Router();
 
@@ -21,6 +22,7 @@ app.get('/', getProjects)
 app.post('/dominio', createDominio);
 app.get('/build/:id', buildProject);
 app.get('/dominios/:proyecto', getDominios)
+app.put('/dominios/:id', updateDominio)
 app.get('/config/:proyecto', getConfig)
 app.get('/logs/:proyecto', getLogs)
 app.post('/start/:proyecto', startSystem)
