@@ -6,6 +6,7 @@ const { exec } = require('child_process');
 const actualizarDNS = async (dominio_id) => {
     try {
         const response = await clientPS.query(`SELECT D.*, G.usuario AS grupo_usuario, P.proyect_directory FROM dominios INNER JOIN proyectos P ON P.id = D.proyecto_id INNER JOIN grupos G ON G.id = P.grupo WHERE D.id = $1`, [dominio_id])
+        console.log(response.rows)
         if(response.rowCount > 0) {
 
             const data = response.rows[0]
