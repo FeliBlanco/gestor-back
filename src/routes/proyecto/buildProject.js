@@ -35,7 +35,7 @@ const buildProject = async (req, res) => {
     if(grupo.rowCount == 0) return res.status(503).send("No se encontró el grupo")
 
     const tipo_sistema = framework.rows[0].tipo;
-    const tipo_sistema_docker  = framework.rows[0].tipo_sistema_docker ;
+    const tipo_sistema_docker  = data.sistema_docker;
 
     const fecha = moment().format('D/MM/YYYY HH:mm:ss')
             
