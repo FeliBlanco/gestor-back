@@ -12,6 +12,7 @@ const getLogs = require('./getLogs');
 const startSystem = require('./startSystem');
 const stopSystem = require('./stopSystem');
 const updateDominio = require('./updateDominio');
+const deleteProject = require('./deleteProject');
 
 const app = Router();
 
@@ -21,6 +22,7 @@ app.get('/', getProjects)
 
 app.post('/dominio', createDominio);
 app.get('/build/:id', buildProject);
+app.delete('/:id', deleteProject);
 app.get('/dominios/:proyecto', getDominios)
 app.put('/dominios/:id', updateDominio)
 app.get('/config/:proyecto', getConfig)

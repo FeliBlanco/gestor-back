@@ -15,14 +15,11 @@ const actualizarDNS = async (dominio_id) => {
             INNER JOIN proyectos P ON P.id = D.proyecto_id 
             INNER JOIN grupos G ON G.id = P.grupo 
             WHERE D.id = $1`, [dominio_id])
-        console.log(response.rows)
         if(response.rowCount > 0) {
 
             const data = response.rows[0]
             const envFilePath = path.join(`/etc/nginx/sites-available/`, data.dominio.toLowerCase());
 
-            console.log("ACTUALIAR DNS")
-            console.log(envFilePath)
 
             let conf = data.configuracion.replaceAll('[dominio]', data.dominio.toLowerCase())
 
