@@ -31,7 +31,7 @@ const deleteProject = async (req, res) => {
 
         const dominios = await clientPS.query(`SELECT * FROM dominios WHERE proyecto_id = $1`, [id])
 
-        await Promise.all(dominios.rows.forEach(async dominio => {
+        await Promise.all(dominios.rows.map(async dominio => {
             await execAsync(`rm /etc/nginx/sites-available/${dominio.dominio.toLowerCase()} && rm /etc/nginx/sites-enabled/${dominio.dominio.toLowerCase()}`)
             const response = await axios.get(`https://api.cloudflare.com/client/v4/zones/${process.env.CLOUDFLARE_ZONE_ID}/dns_records?name=${dominio.dominio.toLowerCase()}`, {
                 headers: {
@@ -59,7 +59,7 @@ const deleteProject = async (req, res) => {
         }))
 
         await clientPS.query(`DELETE FROM dominios WHERE proyecto_id = $1`, [id])
-        
+
         await clientPS.query(`DELETE FROM proyectos WHERE id = $1`, [id])
 
         res.send()
