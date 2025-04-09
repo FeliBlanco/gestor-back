@@ -11,7 +11,11 @@ const isLogged = async (req, res, next) => {
 
         const response = await clientPS.query(`SELECT * FROM usuarios WHERE id = $1`, [decoded.userid])
         if(response.rowCount == 0) return res.status(404).send("user not found");
-        req.user = response.rows[0];
+        let user_data = {
+            ...response.rows[0],
+            password: undefined
+        }
+        req.user = user_data
         next()
     } catch(err) {
         console.log(err)
