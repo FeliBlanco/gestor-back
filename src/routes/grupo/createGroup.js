@@ -8,10 +8,16 @@ const createGroup = async (req, res) => {
         } = req.body;
 
         let usuario = nombre.replaceAll(' ', '-').toLowerCase()
-        const search = await clientPS.query(`SELECT id FROM grupos where usuario = $1`, [usuario]);
-        if(search.rowCount != 0) {
-            usuario = `${usuario}-${search.rowCount + 1}`
+
+        let encontrado = false;
+
+        while(encontrado == false) {
+            const search = await clientPS.query(`SELECT id FROM grupos where usuario = $1`, [usuario]);
+            if(search.rowCount != 0) {
+                usuario = `${usuario}-${search.rowCount + 1}`
+            } else encontrado = true;
         }
+
         await clientPS.query(`INSERT INTO grupos (nombre, creador, usuario) VALUES ($1, 'Feli Blanco', $2)`, [nombre, usuario]);
 
         exec(`mkdir -p ${global.URL_PROYECTOS}${usuario}`, (error, stdout, stderr) => {
