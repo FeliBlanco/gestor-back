@@ -70,6 +70,7 @@ const buildProject = async (req, res) => {
         ${envContent.length > 0 ? `&& echo '${envContent}' > /tmp/build_project2/.env` : ''} \
         && docker run --rm \
     -v /tmp/build_project2:/app \
+    -v /app/node_modules \
     -v ${global.URL_PROYECTOS}${grupo.rows[0].usuario}:/output \
     -w /app \
     ${tipo_sistema_docker} \
