@@ -6,6 +6,7 @@ router.use('/proyecto', require('./proyecto/index.js'));
 router.use('/grupo', require('./grupo/index.js'));
 router.use('/framework', require('./framework/index.js'));
 router.use('/build', require('./build/index.js'));
+router.use('/user', require('./user/index.js'));
 
 /*
 

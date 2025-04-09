@@ -69,7 +69,8 @@ const createProject = async (req, res) => {
         start_command,
         grupo,
         docker_name,
-        sistema_docker
+        sistema_docker,
+        creador
         ) VALUES (
          $1,
          $2,
@@ -84,7 +85,8 @@ const createProject = async (req, res) => {
          $11,
          $12,
          $13,
-         $14
+         $14,
+         $15
          ) RETURNING id`, [
             nombre,
             git_repo,
@@ -99,7 +101,8 @@ const createProject = async (req, res) => {
             start_command,
             grupo,
             docker_name,
-            sistema_docker
+            sistema_docker,
+            req.user.id
         ])
     .then(async response => {
         for(const env_var of enviroment_variables) {

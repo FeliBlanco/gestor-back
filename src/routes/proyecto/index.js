@@ -13,12 +13,13 @@ const startSystem = require('./startSystem');
 const stopSystem = require('./stopSystem');
 const updateDominio = require('./updateDominio');
 const deleteProject = require('./deleteProject');
+const isLogged = require('../../utils/verifyToken');
 
 const app = Router();
 
-app.post('/', createProject) 
+app.post('/', isLogged, createProject) 
 app.put('/:id', updateProject)
-app.get('/', getProjects)
+app.get('/', isLogged, getProjects)
 
 app.post('/dominio', createDominio);
 app.get('/build/:id', buildProject);
