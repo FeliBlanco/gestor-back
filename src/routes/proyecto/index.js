@@ -14,6 +14,7 @@ const stopSystem = require('./stopSystem');
 const updateDominio = require('./updateDominio');
 const deleteProject = require('./deleteProject');
 const isLogged = require('../../utils/verifyToken');
+const getMiembros = require('./getMiembros');
 
 const app = Router();
 
@@ -22,6 +23,8 @@ app.put('/:id', updateProject)
 app.get('/', isLogged, getProjects)
 
 app.post('/dominio', createDominio);
+
+app.get('/miembros/:id', isLogged, getMiembros);
 app.get('/build/:id', buildProject);
 app.delete('/:id', deleteProject);
 app.get('/dominios/:proyecto', getDominios)

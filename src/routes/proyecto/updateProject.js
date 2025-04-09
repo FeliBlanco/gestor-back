@@ -13,7 +13,8 @@ const updateProject = async (req, res) => {
             start_command,
             env_vars,
             system_port,
-            sistema_docker
+            sistema_docker,
+            build_commit
         } = req.body;
     
     
@@ -26,6 +27,7 @@ const updateProject = async (req, res) => {
         if(start_command) data.start_command = start_command;
         if(system_port) data.system_port = system_port;
         if(sistema_docker) data.sistema_docker = sistema_docker;
+        if(build_commit) data.build_commit = build_commit;
         
         if(env_vars) {
             await clientPS.query(`DELETE FROM env_vars WHERE proyecto = $1`, [id])

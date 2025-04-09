@@ -66,7 +66,7 @@ const buildProject = async (req, res) => {
         
         const child = exec(`rm -rf /tmp/build_project2 && git clone ${repositorio} /tmp/build_project2 \
         && cd /tmp/build_project2 \
-        && git checkout ${rama} \
+        && git checkout ${data.build_commit.length > 0 ? data.build_commit : rama} \
         ${envContent.length > 0 ? `&& echo '${envContent}' > /tmp/build_project2/.env` : ''} \
         && docker run --rm \
     -v /tmp/build_project2:/app \
@@ -85,7 +85,7 @@ const buildProject = async (req, res) => {
             if(stderr) {
                 //console.warn(`Advertencias: ${stderr}`);
             }
-            exec('git rev-parse --short HEAD', async (error2, stdout2) => {
+            exec('cd /tmp/build_project2 && git rev-parse --short HEAD', async (error2, stdout2) => {
                 if(!error2) {
                     await clientPS.query(`UPDATE proyectos SET commit_build = $1 WHERE id = $2`, [stdout2, data.id]);
                     if(build_log && build_log.rowCount > 0) {
@@ -171,7 +171,7 @@ const buildProject = async (req, res) => {
             console.log(`Deploying in ${global.URL_PROYECTOS}${grupo.rows[0].usuario}/${data.proyect_directory}...`)
             const child = exec(`
             cd ${global.URL_PROYECTOS}${grupo.rows[0].usuario}/${data.proyect_directory} &&
-            git checkout ${rama} &&
+            git checkout ${data.build_commit.length > 0 ? data.build_commit : rama} &&
             git pull &&
             docker rm -f ${data.docker_name} || true &&
             docker run -d --name ${data.docker_name} --restart=unless-stopped -p ${data.puerto}:${data.system_port} -v $(pwd):/app -w /app ${tipo_sistema_docker} sh -c "${comandos.join(' && ')}"`

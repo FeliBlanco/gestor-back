@@ -172,10 +172,9 @@ const createProject = async (req, res) => {
 
                 const responseDNS = await clientPS.query(`INSERT INTO dominios (dominio, configuracion, proyecto_id) VALUES ($1, $2, $3) RETURNING id`, [dominio, configuraciones, response.rows[0].id])
                 actualizarDNS(responseDNS.rows[0].id)
+                res.send({usuario: usuario})
             }
-
         })
-        res.send({usuario: usuario})
     })
     .catch(err => {
         console.log(err)
