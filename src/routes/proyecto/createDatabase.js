@@ -23,14 +23,14 @@ const createDatabase = async (req, res) => {
 
             await clientPS.query(`UPDATE proyectos SET database_name = $1, database_password = $2 WHERE id = $3`, [database_name, database_password, proyecto_id])
 
-            const [err, stdout, stderr] = await execAsync(`PGPASSWORD="${dbPass}" -U ${dbUser} -c "CREATE USER ${database_name} WITH PASSWORD '${database_password}';"`)
+            const [err, stdout, stderr] = await execAsync(`PGPASSWORD="${dbPass}" psql -U ${dbUser} -c "CREATE USER ${database_name} WITH PASSWORD '${database_password}';"`)
             if(err) {
                 console.log("ERROR")
                 console.log(err)
             }
         }
 
-        await execAsync(`PGPASSWORD="${dbPass}" -U ${dbUser} -c "CREATE USER ${database_name} WITH PASSWORD '${database_password}';"`)
+        await execAsync(`PGPASSWORD="${dbPass}" psql -U ${dbUser} -c "CREATE USER ${database_name} WITH PASSWORD '${database_password}';"`)
 
         await clientPS.query(`INSERT INTO databases (nombre, proyecto_id) VALUES ($1, $2)`, [nombre, proyecto_id])
         res.send()
