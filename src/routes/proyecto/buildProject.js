@@ -158,6 +158,7 @@ const buildProject = async (req, res) => {
         
             const comandos = []
 
+            comandos.push("cd /app")
             if(data.install_command && data.install_command.length > 1) {
                 comandos.push(data.install_command)
             }
