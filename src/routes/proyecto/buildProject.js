@@ -68,8 +68,8 @@ const buildProject = async (req, res) => {
         && cd /tmp/build_project2 \
         && git checkout ${data.build_commit.length > 0 ? data.build_commit : rama} \
         ${envContent.length > 0 ? `&& echo '${envContent}' > /tmp/build_project2/.env` : ''} \
-        && docker run --rm \
-    -v /tmp/build_project2:/app \
+        && docker run -rm \
+
     -v ${global.URL_PROYECTOS}${grupo.rows[0].usuario}:/output \
     -w /app \
     ${tipo_sistema_docker} \
