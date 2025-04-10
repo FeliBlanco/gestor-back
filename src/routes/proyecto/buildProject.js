@@ -64,15 +64,22 @@ const buildProject = async (req, res) => {
 
 
         
-        const child = exec(`rm -rf /tmp/build_project2 && git clone ${repositorio} /tmp/build_project2 \
+        /*const child = exec(`rm -rf /tmp/build_project2 && git clone ${repositorio} /tmp/build_project2 \
         && cd /tmp/build_project2 \
         && git checkout ${data.build_commit.length > 0 ? data.build_commit : rama} \
         ${envContent.length > 0 ? `&& echo '${envContent}' > /tmp/build_project2/.env` : ''} \
         && docker run --rm \
+    -v /tmp/build_project2:/app \
     -v ${global.URL_PROYECTOS}${grupo.rows[0].usuario}:/output \
     -w /app \
     ${tipo_sistema_docker} \
-    sh -c "${data.install_command} && ${data.build_command} && cp -r ${data.output_directory}/* /output/${data.proyect_directory}"`, async (error, stdout, stderr) => { 
+    sh -c "${data.install_command} && ${data.build_command} && cp -r ${data.output_directory}/* /output/${data.proyect_directory}"`, async (error, stdout, stderr) => { */
+        
+    const child = exec(`docker run --rm \
+    -v ${global.URL_PROYECTOS}${grupo.rows[0].usuario}:/output \
+    -w /app \
+    ${tipo_sistema_docker} \
+    sh -c "git clone ${repositorio} /app && cd /app && git checkout ${data.build_commit.length > 0 ? data.build_commit : rama} && ${data.install_command} ${envContent.length > 0 ? `&& echo '${envContent}' > .env` : ''} && ${data.build_command} && cp -r ${data.output_directory}/* /output/${data.proyect_directory}"`, async (error, stdout, stderr) => { 
             if(error) {
                 //console.error(`Error ejecutando el script: ${error.message}`);
                 clientPS.query(`UPDATE proyectos SET actualizando = 0 WHERE id = $1`, [data.id]);
