@@ -15,11 +15,18 @@ const createDatabase = async (req, res) => {
 
         const grupoData = await clientPS.query(`SELECT G.* FROM proyectos P INNER JOIN grupos G ON G.id = P.grupo WHERE P.id = $1`, [proyecto_id])
         if(grupoData.rowCount == 0) return res.status(404).send("group not found")
-
+            
+        let db_name = grupoData.rows[0].database_name;
+        let db_pass = grupoData.rows[0].database_password;
+            
         if(!grupoData.rows[0].database_name && !grupoData.rows[0].database_password) {
+
             const numero = Math.floor(Math.random() * 90000) + 10000;
             const database_name = `${grupoData.rows[0].usuario}_${numero}`
             const database_password = generatePassword(30);
+
+            db_name = database_name;
+            db_pass = database_password;
 
             await clientPS.query(`UPDATE proyectos SET database_name = $1, database_password = $2 WHERE id = $3`, [database_name, database_password, proyecto_id])
 
@@ -30,7 +37,7 @@ const createDatabase = async (req, res) => {
             }
         }
 
-        await execAsync(`PGPASSWORD="${dbPass}" psql -U ${dbUser} -c "CREATE USER ${database_name} WITH PASSWORD '${database_password}';"`)
+        await execAsync(`PGPASSWORD="${db_pass}" psql -U ${db_name} -c "CREATE DATABASE ${nombre};"`)
 
         await clientPS.query(`INSERT INTO databases (nombre, proyecto_id) VALUES ($1, $2)`, [nombre, proyecto_id])
         res.send()
