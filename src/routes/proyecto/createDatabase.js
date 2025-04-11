@@ -22,13 +22,13 @@ const createDatabase = async (req, res) => {
         if(!grupoData.rows[0].database_name && !grupoData.rows[0].database_password) {
 
             const numero = Math.floor(Math.random() * 90000) + 10000;
-            const database_name = `${grupoData.rows[0].usuario}_${numero}`
+            const database_name = `${grupoData.rows[0].usuario.toLowerCase()}_${numero}`
             const database_password = generatePassword(30);
 
             db_name = database_name;
             db_pass = database_password;
 
-            await clientPS.query(`UPDATE proyectos SET database_name = $1, database_password = $2 WHERE id = $3`, [database_name, database_password, proyecto_id])
+            await clientPS.query(`UPDATE grupos SET database_name = $1, database_password = $2 WHERE id = $3`, [database_name, database_password, grupoData.rows[0].id])
 
             const [err, stdout, stderr] = await execAsync(`PGPASSWORD="${dbPass}" psql -U ${dbUser} -c "CREATE USER ${database_name} WITH PASSWORD '${database_password}';"`)
             if(err) {

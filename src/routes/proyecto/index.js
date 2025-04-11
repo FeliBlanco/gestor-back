@@ -18,6 +18,7 @@ const getMiembros = require('./getMiembros');
 const asignarUsuarios = require('./asignarUsuarios');
 const sacarMiembro = require('./sacarMiembro');
 const createDatabase = require('./createDatabase');
+const getDatabases = require('./getDatabases');
 
 const app = Router();
 
@@ -37,6 +38,7 @@ app.get('/logs/:proyecto', getLogs)
 app.post('/start/:proyecto', startSystem)
 app.post('/asignar_usuario/:id', isLogged, asignarUsuarios)
 app.post('/create_database/:id', isLogged, createDatabase)
+app.get('/databases/:id', isLogged, getDatabases)
 app.delete('/miembro/:proyecto/:miembro_id', isLogged, sacarMiembro)
 app.post('/stop/:proyecto', stopSystem)
 app.get('/:grupo/:proyecto', getProjectByGroupAndProjectId)
