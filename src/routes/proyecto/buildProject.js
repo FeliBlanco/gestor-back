@@ -4,10 +4,20 @@ const clientPS = require('../../db');
 const { getIO } = require('../../socket');
 const fs = require('fs')
 const path = require('path')
+const si = require('systeminformation');
+
+async function canRunBuild(threshold = 70) {
+    const cpu = await si.currentLoad();
+    return cpu.currentload < threshold; // solo si está debajo del 70%
+}
 
 
 const buildProject = async (req, res) => {
     const sistema = req.params.id;
+
+    if(!await canRunBuild()) {
+        return res.status(503).send('El servidor está muy cargado. Intenta más tarde.');
+    }
 
     const io = getIO();
 
@@ -20,13 +30,13 @@ const buildProject = async (req, res) => {
 
     const data = proyecto.rows[0];
 
-    const { repositorio, rama, ruta_final, directorio_copiar } = data;
+    const { repositorio, rama } = data;
 
-    if(data.actualizando == 1) return res.status(401).send("Ya se está actualizando ese sistema")
+    if(data.actualizando == 1) return res.status(503).send("Ya se está actualizando ese sistema")
 
     
     const search_ac = await clientPS.query(`SELECT * FROM proyectos WHERE actualizando != 0`, [])
-    if(search_ac.rowCount != 0) return res.status(503).send("Ya hay un sistema actualizandose")
+    if(search_ac.rowCount > 1) return res.status(503).send("Ya hay un sistema actualizandose. Intenta más tarde.")
 
     const framework = await clientPS.query(`SELECT * FROM frameworks WHERE id = $1`, [data.framework])
     if(framework.rowCount == 0) return res.status(503).send("No se encontró el framework")
