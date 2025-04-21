@@ -8,7 +8,9 @@ const si = require('systeminformation');
 
 async function canRunBuild(threshold = 70) {
     const cpu = await si.currentLoad();
-    return cpu.currentload < threshold; // solo si está debajo del 70%
+    console.log(cpu)
+    console.log(cpu.currentLoad)
+    return cpu.currentLoad < threshold; // solo si está debajo del 70%
 }
 
 
