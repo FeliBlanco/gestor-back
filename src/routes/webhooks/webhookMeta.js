@@ -10,7 +10,7 @@ const webhookMeta = async (req, res) => {
     console.log("JOLAA")
 
     if (mode === 'subscribe' && token === "twillo") {
-
+        console.log("PASA EL SUSCRIBE")
         try {
             const contenido = await fs.readFile(global.dirname+'/webhook.json', 'utf-8');
             const json = JSON.parse(contenido);
