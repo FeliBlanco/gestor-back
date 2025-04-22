@@ -9,6 +9,7 @@ global.URL_PROYECTOS = "/home/proyectos/"
 
 const server = http.createServer(app)
 
+global.dirname = __dirname;
 
 connectSocket(server)
 

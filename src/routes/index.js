@@ -7,6 +7,7 @@ router.use('/grupo', require('./grupo/index.js'));
 router.use('/framework', require('./framework/index.js'));
 router.use('/build', require('./build/index.js'));
 router.use('/user', require('./user/index.js'));
+router.use('/webhook', require('./webhooks/index.js'));
 
 /*
 
