@@ -183,7 +183,7 @@ const buildProject = async (req, res) => {
             const child = exec(`
             cd ${global.URL_PROYECTOS}${grupo.rows[0].usuario}/${data.proyect_directory} &&
             git checkout ${data.build_commit.length > 0 ? data.build_commit : rama} &&
-            ${data.build_commit.length == 0 && `git pull &&`}
+            ${data.build_commit.length == 0 && `git stash && git pull &&`}
             docker rm -f ${data.docker_name} || true &&
             docker run -d --name ${data.docker_name} --restart=unless-stopped -p ${data.puerto}:${data.system_port} -v $(pwd):/app -w /app ${tipo_sistema_docker} sh -c "${comandos.join(' && ')}"`
             , async (error, stdout, stderr) => {
