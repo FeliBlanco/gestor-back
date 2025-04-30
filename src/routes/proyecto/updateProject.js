@@ -33,8 +33,7 @@ const updateProject = async (req, res) => {
             await clientPS.query(`DELETE FROM env_vars WHERE proyecto = $1`, [id])
             try {
                 env_vars.forEach(async env => {
-
-                    await clientPS.query(`INSERT INTO env_vars (key, value, proyecto, oculto) VALUES ($1, $2, $3, $4)`, [env.key, env.value, id, env.oculto])
+                    await clientPS.query(`INSERT INTO env_vars (key, value, proyecto, oculto) VALUES ($1, $2, $3, $4) RETURNING *`, [env.key, env.value, id, env.oculto])
                 })
             }
             catch(err) {
