@@ -107,7 +107,7 @@ const createProject = async (req, res) => {
     .then(async response => {
         for(const env_var of enviroment_variables) {
             if(env_var.key.length > 0) {
-                await clientPS.query(`INSERT INTO env_vars (proyecto, key, value) VALUES ($1, $2, $3)`, [response.rows[0].id, env_var.key, env_var.value])
+                await clientPS.query(`INSERT INTO env_vars (proyecto, key, value, oculto) VALUES ($1, $2, $3, $4)`, [response.rows[0].id, env_var.key, env_var.value, env_var.oculto])
             }
         }
         let puerto_usar = 0;
