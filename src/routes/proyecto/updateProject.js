@@ -34,7 +34,7 @@ const updateProject = async (req, res) => {
             try {
                 env_vars.forEach(async env => {
                     if(env.oculto == true) {
-                        env.value = env.value.length > 0 ? new Array(env.value.length).fill('*').toString().replaceAll(',', '') : ''
+                        env.value = env.value.length > 0 ? new Array(env.value.length).fill('*').join() : ''
                     }
                     await clientPS.query(`INSERT INTO env_vars (key, value, proyecto) VALUES ($1, $2, $3)`, [env.key, env.value, id])
                 })

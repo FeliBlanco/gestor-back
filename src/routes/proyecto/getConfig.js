@@ -9,7 +9,7 @@ const getConfig = async (req, res) => {
         let env_vars = []
         const result_envs = await clientPS.query(`SELECT * FROM env_vars WHERE proyecto = $1`, [project_id])
         if(result_envs.rowCount > 0) {
-            env_vars = result_envs.rows.map((env) => ({...env, value: env.oculto == true ? new Array(env.value.length).fill('*').toString().replaceAll(',', '') : env.value }))
+            env_vars = result_envs.rows.map((env) => ({...env, value: env.oculto == true ? new Array(env.value.length).fill('*').join() : env.value }))
         }
 
         res.send({
