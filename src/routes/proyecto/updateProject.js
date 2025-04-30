@@ -34,7 +34,7 @@ const updateProject = async (req, res) => {
             try {
                 env_vars.forEach(async env => {
 
-                    await clientPS.query(`INSERT INTO env_vars (key, value, proyecto) VALUES ($1, $2, $3)`, [env.key, env.value, id])
+                    await clientPS.query(`INSERT INTO env_vars (key, value, proyecto, oculto) VALUES ($1, $2, $3, $4)`, [env.key, env.value, id, env.oculto])
                 })
             }
             catch(err) {
