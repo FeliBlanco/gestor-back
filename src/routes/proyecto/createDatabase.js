@@ -38,8 +38,9 @@ const createDatabase = async (req, res) => {
         }
 
         const [err] = await execAsync(`PGPASSWORD="${process.env.DB_ROOT_PASSWORD}" psql -U ${process.env.DB_ROOT_USER} -c "CREATE DATABASE ${nombre};"`)
-        const [err] = await execAsync(`PGPASSWORD="${process.env.DB_ROOT_PASSWORD}" psql -U ${process.env.DB_ROOT_USER} -c "GRANT ALL PRIVILEGES ON DATABASE ${nombre} TO ${db_name};"`)
+        const [err2] = await execAsync(`PGPASSWORD="${process.env.DB_ROOT_PASSWORD}" psql -U ${process.env.DB_ROOT_USER} -c "GRANT ALL PRIVILEGES ON DATABASE ${nombre} TO ${db_name};"`)
         console.log("ERR", err)
+        console.log("ERR2", err2)
         await clientPS.query(`INSERT INTO databases (nombre, proyecto_id) VALUES ($1, $2)`, [nombre, proyecto_id])
         res.send()
     }
