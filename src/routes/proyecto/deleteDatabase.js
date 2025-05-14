@@ -22,6 +22,7 @@ const deleteDatabase = async (req, res) => {
                     console.log("ERROR")
                     console.log(err)
                 }
+                console.log("ELIMINAR DB ", grupoData.rows[0].database_name)
                 await execAsync(`PGPASSWORD="${process.env.DB_ROOT_PASSWORD}" psql -U ${process.env.DB_ROOT_USER} -c "DROP DATABASE ${grupoData.rows[0].database_name};"`)
                 await clientPS.query(`UPDATE grupos SET database_name = '', database_password = '' WHERE id = $1`, [grupoData.rows[0].id])
             }
