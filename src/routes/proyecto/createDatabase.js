@@ -37,7 +37,7 @@ const createDatabase = async (req, res) => {
             }
         }
 
-        await execAsync(`PGPASSWORD="${db_pass}" psql -U ${db_name} -c "CREATE DATABASE ${nombre};"`)
+        await execAsync(`PGPASSWORD="${db_pass}" psql -U ${db_name} -c "CREATE DATABASE ${nombre};GRANT ALL PRIVILEGES ON DATABASE ${nombre} TO ${database_name};"`)
 
         await clientPS.query(`INSERT INTO databases (nombre, proyecto_id) VALUES ($1, $2)`, [nombre, proyecto_id])
         res.send()

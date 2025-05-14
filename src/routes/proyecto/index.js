@@ -19,6 +19,7 @@ const asignarUsuarios = require('./asignarUsuarios');
 const sacarMiembro = require('./sacarMiembro');
 const createDatabase = require('./createDatabase');
 const getDatabases = require('./getDatabases');
+const deleteDatabase = require('./deleteDatabase');
 
 const app = Router();
 
@@ -39,6 +40,7 @@ app.post('/start/:proyecto', startSystem)
 app.post('/asignar_usuario/:id', isLogged, asignarUsuarios)
 app.post('/create_database/:id', isLogged, createDatabase)
 app.get('/databases/:id', isLogged, getDatabases)
+app.delete('/database/:id', isLogged, deleteDatabase)
 app.delete('/miembro/:proyecto/:miembro_id', isLogged, sacarMiembro)
 app.post('/stop/:proyecto', stopSystem)
 app.get('/:grupo/:proyecto', getProjectByGroupAndProjectId)
