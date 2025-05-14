@@ -17,7 +17,7 @@ const deleteDatabase = async (req, res) => {
             const countDBS = await clientPS.query(`SELECT * FROM databases WHERE proyecto_id = $1`, [proyecto_id])
 
             if(countDBS.rowCount == 0) {
-                const [err, stdout, stderr] = await execAsync(`PGPASSWORD="${grupoData.rows[0].database_password}" psql -U ${grupoData.rows[0].database_name} -c "DROP DATABASE ${dabataseData.rows[0].nombre};"`)
+                const [err, stdout, stderr] = await execAsync(`PGPASSWORD="${process.env.DB_ROOT_PASSWORD}" psql -U ${process.env.DB_ROOT_USER} -c "DROP DATABASE ${dabataseData.rows[0].nombre};"`)
                 if(err) {
                     console.log("ERROR")
                     console.log(err)
