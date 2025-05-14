@@ -11,13 +11,12 @@ const deleteDatabase = async (req, res) => {
 
         await clientPS.query(`DELETE FROM databases WHERE id = $1`, [id])
 
-        console.log("ELIMINAR DB ", db_data.database_name)
+        console.log("ELIMINAR DB ", db_data.nombre)
         const [err, stdout, stderr] = await execAsync(`PGPASSWORD="${process.env.DB_ROOT_PASSWORD}" psql -U ${process.env.DB_ROOT_USER} -c "DROP DATABASE ${db_data.nombre};"`)
         if(err) {
             console.log("ERROR")
             console.log(err)
         }
-
 
         res.send()
     }
